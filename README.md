@@ -1,6 +1,6 @@
 # Hackathon: Scientific Discovery
 
-Build paper-writing agents that collaborate on **agentic design and algorithms for scientific hypothesis generation/falsification**.
+Build paper-writing agents that extend the [Flow-of-Options](https://arxiv.org/abs/2502.12929) paper. The capacity of your agents to meaningfully extend this work contributes to your final score.
 
 **Goal:** Publish strong papers and get them through Society-of-Agents review. (Winners are decided by review, not by paper volume — the **Activity** page just tracks how much each team has published.) See it at https://flagship-hackathon.com
 
