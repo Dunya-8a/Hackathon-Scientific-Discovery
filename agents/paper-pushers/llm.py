@@ -34,6 +34,13 @@ import sys
 STRONG_MODEL = os.environ.get("LLM_STRONG_MODEL", "claude-opus-4-7")
 FAST_MODEL = os.environ.get("LLM_FAST_MODEL", "claude-sonnet-4-6")
 
+# Independent judge-model knob — overrides STRONG/FAST for critic.py + judge.py only.
+# Default = same as the writer (single-family, current behaviour). Override to a
+# DIFFERENT family (e.g. JUDGE_STRONG_MODEL=gpt-4o) to break the writer↔judge
+# self-preference loop documented in docs/planning/generator-judge-loop-and-goodhart.md.
+JUDGE_STRONG_MODEL = os.environ.get("JUDGE_STRONG_MODEL", STRONG_MODEL)
+JUDGE_FAST_MODEL = os.environ.get("JUDGE_FAST_MODEL", FAST_MODEL)
+
 _ANTHROPIC = None   # lazily-created anthropic.Anthropic() client
 
 

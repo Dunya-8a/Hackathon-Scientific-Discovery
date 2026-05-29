@@ -43,17 +43,18 @@ from scipy.optimize import minimize
 from hackathon_science.git_ops import load_papers
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from llm import chat as _chat, STRONG_MODEL, FAST_MODEL   # noqa: E402
+from llm import chat as _chat, JUDGE_STRONG_MODEL, JUDGE_FAST_MODEL   # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
 #
-# Model tiers come from the shared llm helper (env-overridable via
-# LLM_FAST_MODEL / LLM_STRONG_MODEL; defaults to the direct Anthropic API on the
-# same Sonnet/Opus tiers the hackathon used). llm.chat routes by id prefix:
-# claude-* -> Anthropic, gpt-/o1-/o3- -> OpenAI, else -> Bedrock.
-SONNET = FAST_MODEL       # Stage 1 + early tournament rounds
-OPUS = STRONG_MODEL       # tournament finals
+# Judge model tiers — by default mirror LLM_STRONG/FAST (single-family), but
+# can be overridden via JUDGE_STRONG_MODEL / JUDGE_FAST_MODEL env vars to run
+# the judge on a different family than the writer (Goodhart defense; see
+# docs/planning/generator-judge-loop-and-goodhart.md). llm.chat routes by id
+# prefix: claude-* -> Anthropic, gpt-/o1-/o3- -> OpenAI, else -> Bedrock.
+SONNET = JUDGE_FAST_MODEL    # Stage 1 + early tournament rounds
+OPUS = JUDGE_STRONG_MODEL    # tournament finals
 
 STAGE1_KEEP = 50          # Stage 1 funnel width (1000 -> 50)
 STAGE1_SAMPLES = 3        # pointwise samples per paper, averaged

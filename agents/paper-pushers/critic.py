@@ -20,13 +20,15 @@ from typing import Optional
 from hackathon_science import Paper
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from llm import chat as _chat, STRONG_MODEL, FAST_MODEL   # noqa: E402
+from llm import chat as _chat, JUDGE_STRONG_MODEL, JUDGE_FAST_MODEL   # noqa: E402
 
-# Strong (area chair / revision) and fast (reviewer panel) tiers. Default to the
-# direct Anthropic API; override the backend via LLM_STRONG_MODEL / LLM_FAST_MODEL
-# env vars (Bedrock global.anthropic.* or OpenAI gpt-*). See llm.py.
-OPUS = STRONG_MODEL
-SONNET = FAST_MODEL
+# Critic and revision use the JUDGE tier. By default JUDGE_STRONG/FAST_MODEL
+# mirror LLM_STRONG/FAST_MODEL (single-family, current behaviour), but can be
+# overridden independently via JUDGE_STRONG_MODEL / JUDGE_FAST_MODEL env vars.
+# Set these to a different family than the writer to break the self-preference
+# loop documented in docs/planning/generator-judge-loop-and-goodhart.md.
+OPUS = JUDGE_STRONG_MODEL
+SONNET = JUDGE_FAST_MODEL
 
 
 # --- LLM helpers --------------------------------------------------------

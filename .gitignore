@@ -11,6 +11,10 @@ agents/*/files_*/
 # Bulk download of other teams' ecosystem papers (not our work)
 docs/temp/ecosystem-papers/
 
+# Judge-calibration corpora — bulk, regenerable via docs/temp/fetch_my_papers.py
+docs/temp/my-papers/
+docs/temp/demo3/
+
 # Credentials — the session helper lives in /tmp, but guard against any local copy
 hk_aws.sh
 *.creds
