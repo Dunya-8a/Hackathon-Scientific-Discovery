@@ -9,7 +9,7 @@ Phase A scope:
   - Autoresearch loop: baseline + 3 attempts on a single script.py
   - METRIC parse + GATE check + revert-writes-best
   - Section-by-section paper composition (Sakana v1 pattern)
-  - Lightweight literature mining via OpenAlex (academic-grade, replaces DDG)
+  - Lightweight literature mining via arXiv (primary) + OpenAlex (backfill); replaces DDG
   - Deterministic experiment-log table + Discussion section (defense-pass-aligned)
 
 Out of scope (Phase B+):
@@ -22,6 +22,11 @@ from __future__ import annotations
 import json
 import re
 import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
@@ -30,9 +35,6 @@ from typing import Optional
 from hackathon_science import Paper
 from hackathon_science.tools import run_code
 from hackathon_science.utils import call_llm
-
-import urllib.parse
-import urllib.request
 
 
 # --- Configuration ------------------------------------------------------
@@ -432,11 +434,16 @@ REFERENCES = """1. Nair, L., Trase, I., & Kim, M. (2025). Flow-of-Options: Diver
 """
 
 
-# --- Literature mining (OpenAlex, replaces DDG) ------------------------
+# --- Literature mining (arXiv primary + OpenAlex backfill) -------------
 #
-# OpenAlex (https://openalex.org) is a free, no-auth scholarly index covering
-# ~250M works. Polite usage convention is to include a contact email in the
-# User-Agent so they can throttle abuse without blocking everyone.
+# For FoO / autoresearch / LLM-reasoning queries, arXiv is the source of
+# truth — anchor papers live there as preprints. OpenAlex is a broader
+# academic index (~250M works) that covers published versions and adjacent
+# fields; we use it to backfill if arXiv comes up short.
+#
+# Both APIs are free with no auth. arXiv requests ≥3s between queries
+# (https://info.arxiv.org/help/api/tou.html); we honor that. OpenAlex
+# appreciates a contact email in the User-Agent.
 
 LIT_QUERIES = [
     "Flow-of-Options Nair Trase Kim LLM reasoning",
@@ -445,9 +452,13 @@ LIT_QUERIES = [
     "low-discrepancy quasi-random sampling reasoning",
 ]
 
+ARXIV_ENDPOINT = "https://export.arxiv.org/api/query"
+ARXIV_NS = "{http://www.w3.org/2005/Atom}"
+ARXIV_REQUEST_GAP_SECS = 3.0  # arXiv API ToS
+
 OPENALEX_ENDPOINT = "https://api.openalex.org/works"
 OPENALEX_USER_AGENT = "paper-pushers/0.1 (mailto:contact@augmentationlab.org)"
-LIT_TIMEOUT_SECS = 10.0
+LIT_TIMEOUT_SECS = 30.0  # arXiv API docs warn "may take up to 30 seconds"
 
 
 def _abstract_from_inverted(inv: Optional[dict]) -> str:
@@ -502,38 +513,117 @@ def _openalex_search(query: str, per_page: int = 5) -> list[dict]:
     return payload.get("results", []) or []
 
 
-def gather_literature(max_total: int = 8) -> list[dict]:
-    """Pull deduped academic sources from OpenAlex. Returns [{title,url,snippet}, ...].
+def _arxiv_search(query: str, max_results: int = 5) -> list[dict]:
+    """Query arXiv API. Returns normalized [{title, url, snippet}, ...].
 
-    Failures (network, JSON, OpenAlex outage) are non-fatal — the paper still
-    composes without literature context, just with weaker grounding.
+    arXiv returns Atom XML; we parse with stdlib ElementTree. Raises on
+    network/parse error so the caller can fall back to OpenAlex.
+    """
+    params = urllib.parse.urlencode({
+        "search_query": f"all:{query}",
+        "max_results": max_results,
+        "sortBy": "relevance",
+        "sortOrder": "descending",
+    })
+    req = urllib.request.Request(
+        f"{ARXIV_ENDPOINT}?{params}",
+        headers={"User-Agent": OPENALEX_USER_AGENT},
+    )
+    with urllib.request.urlopen(req, timeout=LIT_TIMEOUT_SECS) as resp:
+        xml_text = resp.read().decode("utf-8")
+    root = ET.fromstring(xml_text)
+    entries: list[dict] = []
+    for entry in root.findall(f"{ARXIV_NS}entry"):
+        title = (entry.findtext(f"{ARXIV_NS}title") or "").strip().replace("\n", " ")
+        title = re.sub(r"\s+", " ", title)
+        summary = (entry.findtext(f"{ARXIV_NS}summary") or "").strip().replace("\n", " ")
+        summary = re.sub(r"\s+", " ", summary)
+        url = (entry.findtext(f"{ARXIV_NS}id") or "").strip()
+        published = (entry.findtext(f"{ARXIV_NS}published") or "")[:4]  # year only
+        authors = []
+        for a in entry.findall(f"{ARXIV_NS}author"):
+            name = (a.findtext(f"{ARXIV_NS}name") or "").strip()
+            if name:
+                authors.append(name)
+        if not title or not url:
+            continue
+        head_bits = []
+        if authors:
+            head_bits.append(", ".join(authors[:3]) + (" et al." if len(authors) > 3 else ""))
+        if published:
+            head_bits.append(f"({published})")
+        head = " ".join(head_bits)
+        snippet = (f"{head}. {summary}" if head else summary).strip(". ").strip()
+        entries.append({"title": title, "url": url, "snippet": snippet})
+    return entries
+
+
+def gather_literature(max_total: int = 8) -> list[dict]:
+    """Pull deduped academic sources. arXiv primary, OpenAlex backfill.
+
+    Returns [{title, url, snippet}, ...]. Failures (network, parse, outage)
+    are non-fatal — paper still composes without literature, just with
+    weaker grounding.
     """
     seen_urls: set[str] = set()
     seen_titles: set[str] = set()
     out: list[dict] = []
-    for q in LIT_QUERIES:
-        if len(out) >= max_total:
-            break
-        try:
-            works = _openalex_search(q, per_page=5)
-        except Exception as e:
-            print(f"[lit] OpenAlex query failed for {q!r}: {e}", file=sys.stderr)
-            continue
-        for w in works:
-            entry = _openalex_to_lit_entry(w)
-            if not entry:
+
+    def _absorb(entries: list[dict]) -> None:
+        for e in entries:
+            if len(out) >= max_total:
+                return
+            url_key = (e.get("url") or "").lower()
+            title_key = (e.get("title") or "").lower()
+            if not title_key:
                 continue
-            url_key = entry["url"].lower()
-            title_key = entry["title"].lower()
             if (url_key and url_key in seen_urls) or title_key in seen_titles:
                 continue
             if url_key:
                 seen_urls.add(url_key)
             seen_titles.add(title_key)
-            out.append(entry)
+            out.append(e)
+
+    # Pass 1 — arXiv (primary). Throttle to respect 1-req-per-3-sec ToS.
+    # On 429 (rate limited) we stop hitting arXiv this run entirely — piling
+    # on extends the cooldown. OpenAlex backfill picks up the slack.
+    arxiv_disabled = False
+    for i, q in enumerate(LIT_QUERIES):
+        if arxiv_disabled or len(out) >= max_total:
+            break
+        if i > 0:
+            time.sleep(ARXIV_REQUEST_GAP_SECS)
+        try:
+            _absorb(_arxiv_search(q, max_results=5))
+        except urllib.error.HTTPError as he:
+            if he.code == 429:
+                print("[lit] arXiv rate-limited (429); skipping remaining arXiv queries",
+                      file=sys.stderr)
+                arxiv_disabled = True
+            else:
+                print(f"[lit] arXiv HTTP {he.code} for {q!r}: {he.reason}", file=sys.stderr)
+        except Exception as e:
+            print(f"[lit] arXiv query failed for {q!r}: {e}", file=sys.stderr)
+    print(f"[lit] arXiv contributed {len(out)} sources")
+
+    # Pass 2 — OpenAlex backfill, only if arXiv left room.
+    pre_openalex = len(out)
+    if pre_openalex < max_total:
+        for q in LIT_QUERIES:
             if len(out) >= max_total:
                 break
-    print(f"[lit] OpenAlex returned {len(out)} unique sources")
+            try:
+                works = _openalex_search(q, per_page=5)
+            except Exception as e:
+                print(f"[lit] OpenAlex query failed for {q!r}: {e}", file=sys.stderr)
+                continue
+            _absorb([
+                entry for w in works
+                if (entry := _openalex_to_lit_entry(w)) is not None
+            ])
+        print(f"[lit] OpenAlex added {len(out) - pre_openalex} more sources")
+
+    print(f"[lit] {len(out)} unique sources total")
     return out
 
 
@@ -760,7 +850,7 @@ def run(problem_domain: str, papers_dir: Optional[Path] = None) -> Paper:
     else:
         print(f"[run] no successful experiment — paper will note this")
 
-    print("[run] gathering literature via OpenAlex...")
+    print("[run] gathering literature via arXiv + OpenAlex...")
     literature = gather_literature(max_total=8)
 
     paper = compose_paper(problem_domain, result, literature=literature)

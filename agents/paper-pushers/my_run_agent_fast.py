@@ -9,7 +9,7 @@ Phase A scope:
   - Autoresearch loop: baseline + 3 attempts on a single script.py
   - METRIC parse + GATE check + revert-writes-best
   - Section-by-section paper composition (Sakana v1 pattern)
-  - Lightweight literature mining via OpenAlex (academic-grade, replaces DDG)
+  - Lightweight literature mining via arXiv (primary) + OpenAlex (backfill); replaces DDG
   - Deterministic experiment-log table + Discussion section (defense-pass-aligned)
 
 Out of scope (Phase B+):
@@ -609,7 +609,7 @@ def run(problem_domain: str, papers_dir: Optional[Path] = None) -> Paper:
     else:
         print(f"[run] no successful experiment — paper will note this")
 
-    print("[run] gathering literature via OpenAlex...")
+    print("[run] gathering literature via arXiv + OpenAlex...")
     literature = gather_literature(max_total=8)
 
     paper = compose_paper(problem_domain, result, literature=literature)

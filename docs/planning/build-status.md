@@ -65,9 +65,10 @@ Priority is rough — `[P0]` blocking value, `[P1]` clear win, `[P2]` nice-to-ha
 - [ ] `[P1]` **`agent_data_availability.py`** — FoO limitation #1. Study how FoO behaves under low-data regimes (e.g., 10, 50, 200 training rows). Metric: walk-selection accuracy vs. an oracle as n_train shrinks. ~45 min, same template.
 
 ### Literature retrieval upgrade
-- [x] **OpenAlex swap** — `gather_literature()` now hits OpenAlex (~250M works, no auth, polite User-Agent with our email). Returns proper paper metadata: title, reconstructed abstract from `abstract_inverted_index`, DOI/landing URL, authors, year. `my_run_agent_fast.py` imports the helper from main (single source of truth, same pattern as `archive_paper`). Live-tested 2026-05-28. `search_web` (DDG) import removed.
-- [ ] `[P2]` **arXiv fallback** — for fresh CS/ML preprints not yet indexed by OpenAlex. Atom-XML parse adds complexity; defer until we see an OpenAlex miss in practice.
-- [ ] `[P2]` **Direct arxiv-ID lookup** — when a query mentions a specific arxiv ID (e.g. `2502.12929`), hit `/works/doi:10.48550/arxiv.<id>` instead of free-text search. Would put the actual FoO paper in our retrieved set instead of generic surveys that mention it.
+- [x] **OpenAlex swap** — `gather_literature()` left DDG behind. Live-tested.
+- [x] **arXiv primary** — `_arxiv_search` (Atom-XML via stdlib `xml.etree`) is now the primary lookup; OpenAlex backfills when arXiv comes up short. Throttled to 1 req per 3s (arXiv ToS). On HTTP 429, the entire arXiv pass is skipped for that run (piling on extends cooldown) and OpenAlex takes over — verified end-to-end via mock. Timeout bumped to 30s per arXiv's "may take up to 30 seconds" docs note.
+- [ ] `[P2]` **Direct arxiv-ID lookup** — when a query mentions a specific arxiv ID (e.g. `2502.12929`), hit `/abs/<id>` (arXiv) or `/works/doi:10.48550/arxiv.<id>` (OpenAlex) instead of free-text search. Would put the actual FoO paper in our retrieved set instead of related surveys.
+- [ ] `[P2]` **Persist a literature cache** — same query-set runs every paper; cache `gather_literature` output by query-hash to `agents/paper-pushers/.lit_cache/` with a 24h TTL. Saves ~10–20s and 4–8 API calls per run.
 
 ### Auto-archive coverage
 - [ ] `[P2]` Add `archive_paper` import + call to `agent_checker_fp.py` and `agent_method_bias.py`. Currently skipped because they always run-and-publish-chained, but if we start iterating without publishing, drafts will be lost (same trap that almost caught `f04e0d48`). ~5 lines each.
