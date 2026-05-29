@@ -1,0 +1,23 @@
+[
+  {
+    "paper_id": "4ff5ed18",
+    "title": "Reducing Consistency-Checker False Positives in Flow-of-Options via Autoresearch Feedback Loops",
+    "score": 6.2146,
+    "bt_uncertainty": 2.7071,
+    "stage1_score": 1.3333
+  },
+  {
+    "paper_id": "b4aef3a3",
+    "title": "FoO Walks as Sampling Without Replacement on Prefix Trees",
+    "score": -0.0,
+    "bt_uncertainty": 2.5112,
+    "stage1_score": 1.0
+  },
+  {
+    "paper_id": "fc27eb29",
+    "title": "Adaptive Walk Sampling for Flow-of-Options via Autoresearch Collision Feedback",
+    "score": -6.2146,
+    "bt_uncertainty": 2.4105,
+    "stage1_score": 1.0
+  }
+]
