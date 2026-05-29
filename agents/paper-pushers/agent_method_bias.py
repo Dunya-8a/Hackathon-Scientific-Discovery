@@ -33,14 +33,20 @@ from typing import Optional
 
 from hackathon_science import Paper
 from hackathon_science.tools import run_code
-from hackathon_science.utils import call_llm
+
+# Provider-routed LLM helper. STRONG_MODEL/FAST_MODEL come from env (see
+# llm.py); defaults are claude-opus-4-7 / claude-sonnet-4-6 via Anthropic API.
+# GPT_MODEL is hardcoded because this paper's whole point is cross-family
+# Claude-vs-GPT comparison — that's the experiment, not a config knob.
+sys.path.insert(0, str(Path(__file__).parent))
+from llm import chat as _chat, STRONG_MODEL, FAST_MODEL  # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
 
-CLAUDE_MODEL = "global.anthropic.claude-opus-4-7"
-CLAUDE_GEN_MODEL = "global.anthropic.claude-sonnet-4-6"   # option generation
-GPT_MODEL = "gpt-4o"                                       # OpenAI half
+CLAUDE_MODEL = STRONG_MODEL              # area-chair / synthesis / writing
+CLAUDE_GEN_MODEL = FAST_MODEL            # option generation (the Claude half)
+GPT_MODEL = "gpt-4o"                      # the GPT half — cross-family by design
 WORKING_DIR = Path(__file__).parent / "files_method_bias"
 
 FOO_ANCHOR = "Flow-of-Options (Nair, Trase, Kim, ICML 2025, arxiv 2502.12929)"
@@ -72,36 +78,14 @@ RF_ALIASES = ("random forest", "randomforest", "random-forest", "rf",
 
 def _llm(user: str, system: str = "", model: str = CLAUDE_MODEL,
          max_tokens: int = 2000, temperature: Optional[float] = None) -> str:
-    """One-shot call routed to Bedrock or OpenAI. Returns text, '' on error.
+    """Provider-routed call (see llm.chat). Returns text or '' on error.
 
-    The two providers take system + temperature differently in call_llm:
-      - Bedrock: `system=[{text}]` is a top-level Converse param; Opus 4.7
-        rejects `temperature` entirely, so we omit it.
-      - OpenAI: there is no `system` kwarg (it forwards straight to
-        Completions.create and errors); the system prompt must be a role=system
-        message, and `temperature` must be a top-level kwarg (it is dropped if
-        nested inside inferenceConfig).
+    Temperature is forwarded only when > 0 by llm.chat — this keeps Bedrock
+    Opus 4.7 happy (it rejects temperature outright) while preserving the
+    Sonnet T>0 rolls and the OpenAI T>0 rolls this paper actually needs.
     """
-    is_openai = model.startswith(("gpt-", "o1-", "o3-"))
-    kwargs: dict = {"inferenceConfig": {"maxTokens": max_tokens}}
-    if is_openai:
-        messages = []
-        if system:
-            messages.append({"role": "system", "content": [{"text": system}]})
-        messages.append({"role": "user", "content": [{"text": user}]})
-        if temperature and temperature > 0:
-            kwargs["temperature"] = temperature      # -> Completions.create
-    else:
-        messages = [{"role": "user", "content": [{"text": user}]}]
-        if system:
-            kwargs["system"] = [{"text": system}]     # Bedrock omits temperature
-    try:
-        r = call_llm(messages=messages, model_id=model, **kwargs)
-        content = r.get("output", {}).get("message", {}).get("content", [])
-        return content[0].get("text", "") if content else ""
-    except Exception as e:
-        print(f"[_llm] error ({model}): {e}", file=sys.stderr)
-        return ""
+    return _chat(user, system=system, model=model, max_tokens=max_tokens,
+                 temperature=temperature)
 
 
 # --- Script extraction + parsing ----------------------------------------

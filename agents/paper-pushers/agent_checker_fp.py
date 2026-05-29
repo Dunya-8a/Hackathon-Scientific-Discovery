@@ -23,12 +23,15 @@ from typing import Optional
 
 from hackathon_science import Paper
 from hackathon_science.tools import run_code
-from hackathon_science.utils import call_llm
+
+# Provider-routed LLM helper (Anthropic / OpenAI / Bedrock). See llm.py.
+sys.path.insert(0, str(Path(__file__).parent))
+from llm import chat as _chat, STRONG_MODEL  # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
 
-MODEL = "global.anthropic.claude-opus-4-7"
+MODEL = STRONG_MODEL   # provider-routed; override via LLM_STRONG_MODEL env (see llm.py)
 WORKING_DIR = Path(__file__).parent / "files_checker_fp"
 
 FOO_ANCHOR = "Flow-of-Options (Nair, Trase, Kim, ICML 2025, arxiv 2502.12929)"
@@ -47,26 +50,15 @@ METRIC_NAME = "consistency_fp_rate"
 
 def _llm(user: str, system: str = "", model: str = MODEL, max_tokens: int = 4000,
          retry_on_empty: bool = True) -> str:
-    """One-shot Bedrock Converse call. Returns text, '' on error.
+    """Provider-routed call (see llm.chat). Returns text or '' on error.
 
-    NOTE: never sends `temperature` — Opus 4.7 rejects it in inferenceConfig.
+    No temperature sent — llm.chat only forwards temperature when > 0, and
+    Opus 4.7 on Bedrock rejects it outright.
     """
-    messages = [{"role": "user", "content": [{"text": user}]}]
-    kwargs = {"inferenceConfig": {"maxTokens": max_tokens}}
-    if system:
-        kwargs["system"] = [{"text": system}]
     for attempt in range(2 if retry_on_empty else 1):
-        try:
-            r = call_llm(messages=messages, model_id=model, **kwargs)
-            content = r.get("output", {}).get("message", {}).get("content", [])
-            text = content[0].get("text", "") if content else ""
-            if text.strip():
-                return text
-        except Exception as e:
-            print(f"[_llm] error (attempt {attempt+1}): {e}", file=sys.stderr)
-            if attempt == 0 and retry_on_empty:
-                continue
-            return ""
+        text = _chat(user, system=system, model=model, max_tokens=max_tokens)
+        if text.strip():
+            return text
     return ""
 
 

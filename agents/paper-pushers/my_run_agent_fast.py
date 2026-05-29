@@ -26,18 +26,19 @@ from typing import Optional
 
 from hackathon_science import Paper
 from hackathon_science.tools import run_code
-from hackathon_science.utils import call_llm
 
-# Shared helpers — single source of truth in my_run_agent.py.
-# `gather_literature` is the OpenAlex-backed academic search (was DDG).
+# Shared helpers — single source of truth in my_run_agent.py / llm.py.
+# `gather_literature` is the OpenAlex+arXiv academic search (was DDG).
 # `archive_paper` snapshots every paper to agents/paper-pushers/papers/.
+# `_chat` is the provider-routed LLM helper (Anthropic / OpenAI / Bedrock).
 sys.path.insert(0, str(Path(__file__).parent))
 from my_run_agent import archive_paper, gather_literature  # noqa: E402
+from llm import chat as _chat, FAST_MODEL  # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
 
-MODEL = "global.anthropic.claude-sonnet-4-6"
+MODEL = FAST_MODEL   # provider-routed; override via LLM_FAST_MODEL env (see llm.py)
 WORKING_DIR = Path(__file__).parent / "files"
 
 FOO_ANCHOR = "Flow-of-Options (Nair, Trase, Kim, ICML 2025, arxiv 2502.12929)"
@@ -54,27 +55,15 @@ FOO_LIMITATIONS = [
 
 def _llm(user: str, system: str = "", model: str = MODEL, max_tokens: int = 4000,
          retry_on_empty: bool = True) -> str:
-    """One-shot Bedrock Converse call. Returns just the text or '' on error.
+    """Provider-routed call (see llm.chat). Returns text or '' on error.
 
     Retries ONCE if the first response is empty (no content) — empty responses
     silently fall through to fallback strings otherwise, producing thin papers.
     """
-    messages = [{"role": "user", "content": [{"text": user}]}]
-    kwargs = {"inferenceConfig": {"maxTokens": max_tokens}}
-    if system:
-        kwargs["system"] = [{"text": system}]
     for attempt in range(2 if retry_on_empty else 1):
-        try:
-            r = call_llm(messages=messages, model_id=model, **kwargs)
-            content = r.get("output", {}).get("message", {}).get("content", [])
-            text = content[0].get("text", "") if content else ""
-            if text.strip():
-                return text
-        except Exception as e:
-            print(f"[_llm] error (attempt {attempt+1}): {e}", file=sys.stderr)
-            if attempt == 0 and retry_on_empty:
-                continue
-            return ""
+        text = _chat(user, system=system, model=model, max_tokens=max_tokens)
+        if text.strip():
+            return text
     return ""
 
 

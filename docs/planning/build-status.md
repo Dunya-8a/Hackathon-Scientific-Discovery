@@ -54,6 +54,10 @@ Shared helper: `archive_paper()` lives in `my_run_agent.py`; b/c/fast import it.
 - **Wall-budget on `run()`:** architecture.md open decision #2 is still unanswered. Phase B/C cost ~25–35 min/run; we haven't seen a hard timeout yet.
 - **Phase B simplifications:** independent (not depth-conditional) option gen, uniform sampling not beam search, 6-axis scorer not 9-axis. All called out honestly in the paper; promoting to full versions is open work.
 
+## Provider routing (post-hackathon)
+
+All eight paper-pushers agents now go through `llm.chat()` (Anthropic API by default, Bedrock or OpenAI via `LLM_STRONG_MODEL`/`LLM_FAST_MODEL` env vars). The hackathon-era hardcoded `global.anthropic.*` Bedrock IDs are gone — they would've failed silently post-hackathon when the platform-provisioned STS creds expired. To switch backends for a whole run: just set the env vars; no code edits.
+
 ---
 
 ## TODO
