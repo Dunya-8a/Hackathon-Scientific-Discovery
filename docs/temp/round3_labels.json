@@ -1,0 +1,1406 @@
+[
+  {
+    "id": "645d10de",
+    "team": "robotoverlords",
+    "title": "Judge or Distill: Cost-Aware AI Feedback for Flow-of-Options Diversity Selection",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 7.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 7.0,
+          "overall": 6.8
+        },
+        {
+          "reviewer": "B",
+          "tech": 7.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 7.0,
+          "overall": 6.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 8.0,
+          "novelty": 5.0,
+          "clarity": 9.0,
+          "significance": 7.0,
+          "overall": 7.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 7.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 7.0,
+          "overall": 6.8
+        },
+        {
+          "reviewer": "E",
+          "tech": 7.0,
+          "novelty": 5.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 6.2
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 5.0,
+        "code_repro": 7.0,
+        "code_correct": 7.0,
+        "code_align": 10.0,
+        "overall": 7.2
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 7.2,
+      "novelty": 4.4,
+      "clarity": 8.8,
+      "significance": 6.6,
+      "overall": 6.76
+    },
+    "code_axes": {
+      "code_tech": 5.0,
+      "code_repro": 7.0,
+      "code_correct": 7.0,
+      "code_align": 10.0,
+      "overall": 7.2
+    },
+    "extension": 9.0,
+    "combined": 7.143
+  },
+  {
+    "id": "bd47b660",
+    "team": "infinity",
+    "title": "Falsification-Gated Flow-of-Options: A Calibrated Empirical Study of Discriminating-Experiment Selection",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 7.0,
+          "novelty": 5.0,
+          "clarity": 10.0,
+          "significance": 4.0,
+          "overall": 6.5
+        },
+        {
+          "reviewer": "B",
+          "tech": 6.0,
+          "novelty": 3.0,
+          "clarity": 10.0,
+          "significance": 4.0,
+          "overall": 5.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 7.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 7.0,
+          "overall": 6.8
+        },
+        {
+          "reviewer": "D",
+          "tech": 6.0,
+          "novelty": 4.0,
+          "clarity": 10.0,
+          "significance": 4.0,
+          "overall": 6.0
+        },
+        {
+          "reviewer": "E",
+          "tech": 6.0,
+          "novelty": 4.0,
+          "clarity": 10.0,
+          "significance": 4.0,
+          "overall": 6.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 3.0,
+        "code_repro": 5.0,
+        "code_correct": 7.0,
+        "code_align": 10.0,
+        "overall": 6.2
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 6.4,
+      "novelty": 4.0,
+      "clarity": 9.8,
+      "significance": 4.6,
+      "overall": 6.22
+    },
+    "code_axes": {
+      "code_tech": 3.0,
+      "code_repro": 5.0,
+      "code_correct": 7.0,
+      "code_align": 10.0,
+      "overall": 6.2
+    },
+    "extension": 9.0,
+    "combined": 6.614
+  },
+  {
+    "id": "5279a8f9",
+    "team": "alpha-chemistry",
+    "title": "Flow-of-Options for Retrosynthesis: A Sound Search Algorithm Gated by Option-Generator Validity \u2014 Evidence from a Controlled Grammar and USPTO-50K Drug Targets",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 5.0,
+          "novelty": 2.0,
+          "clarity": 8.0,
+          "significance": 7.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "B",
+          "tech": 6.0,
+          "novelty": 0.0,
+          "clarity": 8.0,
+          "significance": 7.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "C",
+          "tech": 7.0,
+          "novelty": 4.0,
+          "clarity": 7.0,
+          "significance": 7.0,
+          "overall": 6.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 7.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 7.0,
+          "overall": 6.5
+        },
+        {
+          "reviewer": "E",
+          "tech": 7.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 6.0,
+          "overall": 6.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 1.0,
+        "code_repro": 2.0,
+        "code_correct": 4.0,
+        "code_align": 10.0,
+        "overall": 4.2
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 10.0,
+        "overall": 10.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 6.4,
+      "novelty": 2.6,
+      "clarity": 7.8,
+      "significance": 6.8,
+      "overall": 5.88
+    },
+    "code_axes": {
+      "code_tech": 1.0,
+      "code_repro": 2.0,
+      "code_correct": 4.0,
+      "code_align": 10.0,
+      "overall": 4.2
+    },
+    "extension": 10.0,
+    "combined": 6.229
+  },
+  {
+    "id": "965fb816",
+    "team": "super-crime",
+    "title": "Same-Model Voting Hits a 1.000 Pairwise-Agreement Ceiling on Adversarial Reasoning: a Mix-Ratio Probe with Cross-Model Rescue",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 3.0,
+          "novelty": 4.0,
+          "clarity": 10.0,
+          "significance": 6.0,
+          "overall": 5.8
+        },
+        {
+          "reviewer": "B",
+          "tech": 4.0,
+          "novelty": 2.0,
+          "clarity": 10.0,
+          "significance": 5.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "C",
+          "tech": 4.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 8.0,
+          "overall": 6.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 10.0,
+          "significance": 8.0,
+          "overall": 6.8
+        },
+        {
+          "reviewer": "E",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 10.0,
+          "significance": 4.0,
+          "overall": 5.8
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 3.0,
+        "code_repro": 1.0,
+        "code_correct": 5.0,
+        "code_align": 10.0,
+        "overall": 4.8
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 4.2,
+      "novelty": 3.6,
+      "clarity": 9.8,
+      "significance": 6.2,
+      "overall": 5.96
+    },
+    "code_axes": {
+      "code_tech": 3.0,
+      "code_repro": 1.0,
+      "code_correct": 5.0,
+      "code_align": 10.0,
+      "overall": 4.8
+    },
+    "extension": 9.0,
+    "combined": 6.229
+  },
+  {
+    "id": "2391cc55",
+    "team": "infinity",
+    "title": "Bayesian Flow-of-Options: Thompson-Sampled Edge Posteriors and Topology-Keyed Case Retrieval over Option DAGs",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 6.0,
+          "novelty": 3.0,
+          "clarity": 9.0,
+          "significance": 5.0,
+          "overall": 5.8
+        },
+        {
+          "reviewer": "B",
+          "tech": 6.0,
+          "novelty": 3.0,
+          "clarity": 9.0,
+          "significance": 5.0,
+          "overall": 5.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 6.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.8
+        },
+        {
+          "reviewer": "D",
+          "tech": 6.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 3.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "E",
+          "tech": 6.0,
+          "novelty": 4.0,
+          "clarity": 10.0,
+          "significance": 5.0,
+          "overall": 6.2
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 2.0,
+        "code_repro": 3.0,
+        "code_correct": 6.0,
+        "code_align": 9.0,
+        "overall": 5.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 6.0,
+      "novelty": 3.6,
+      "clarity": 9.0,
+      "significance": 4.6,
+      "overall": 5.82
+    },
+    "code_axes": {
+      "code_tech": 2.0,
+      "code_repro": 3.0,
+      "code_correct": 6.0,
+      "code_align": 9.0,
+      "overall": 5.0
+    },
+    "extension": 9.0,
+    "combined": 6.157
+  },
+  {
+    "id": "6d4e72f2",
+    "team": "p-hackers",
+    "title": "Pareto-Front Option Selection for Flow-of-Options: Cost-Aware, Tuning-Free LLM Reasoning Path Choice",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "B",
+          "tech": 5.0,
+          "novelty": 2.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.0
+        },
+        {
+          "reviewer": "C",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "D",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 6.0,
+          "overall": 5.8
+        },
+        {
+          "reviewer": "E",
+          "tech": 6.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 5.0,
+          "overall": 6.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 4.0,
+        "code_repro": 1.0,
+        "code_correct": 6.0,
+        "code_align": 10.0,
+        "overall": 5.2
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 5.2,
+      "novelty": 3.6,
+      "clarity": 8.2,
+      "significance": 5.2,
+      "overall": 5.56
+    },
+    "code_axes": {
+      "code_tech": 4.0,
+      "code_repro": 1.0,
+      "code_correct": 6.0,
+      "code_align": 10.0,
+      "overall": 5.2
+    },
+    "extension": 9.0,
+    "combined": 6.0
+  },
+  {
+    "id": "8b0bfc3b",
+    "team": "little-einsteins",
+    "title": "Diversity-Aware Adaptive Option Selection for Flow-of-Options on Mixed LLM Reasoning",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 3.0,
+          "novelty": 5.0,
+          "clarity": 7.0,
+          "significance": 6.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "B",
+          "tech": 4.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.0
+        },
+        {
+          "reviewer": "C",
+          "tech": 4.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 6.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "D",
+          "tech": 4.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 6.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "E",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.5
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 1.0,
+        "code_repro": 0.0,
+        "code_correct": 5.0,
+        "code_align": 10.0,
+        "overall": 4.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 4.0,
+      "novelty": 4.0,
+      "clarity": 7.8,
+      "significance": 5.6,
+      "overall": 5.34
+    },
+    "code_axes": {
+      "code_tech": 1.0,
+      "code_repro": 0.0,
+      "code_correct": 5.0,
+      "code_align": 10.0,
+      "overall": 4.0
+    },
+    "extension": 9.0,
+    "combined": 5.671
+  },
+  {
+    "id": "c50e433f",
+    "team": "little-einsteins",
+    "title": "Evidence-Guided Flow-of-Options for Agentic design and algorithms for scientific hypothesis generation / falsification",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 5.0,
+          "novelty": 1.0,
+          "clarity": 9.0,
+          "significance": 4.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "B",
+          "tech": 5.0,
+          "novelty": 0.0,
+          "clarity": 8.0,
+          "significance": 3.0,
+          "overall": 4.0
+        },
+        {
+          "reviewer": "C",
+          "tech": 5.0,
+          "novelty": 2.0,
+          "clarity": 7.0,
+          "significance": 5.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "D",
+          "tech": 5.0,
+          "novelty": 1.0,
+          "clarity": 10.0,
+          "significance": 3.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "E",
+          "tech": 6.0,
+          "novelty": 2.0,
+          "clarity": 10.0,
+          "significance": 4.0,
+          "overall": 5.5
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 3.0,
+        "code_repro": 7.0,
+        "code_correct": 7.0,
+        "code_align": 10.0,
+        "overall": 6.8
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 5.2,
+      "novelty": 1.2,
+      "clarity": 8.8,
+      "significance": 3.8,
+      "overall": 4.78
+    },
+    "code_axes": {
+      "code_tech": 3.0,
+      "code_repro": 7.0,
+      "code_correct": 7.0,
+      "code_align": 10.0,
+      "overall": 6.8
+    },
+    "extension": 9.0,
+    "combined": 5.671
+  },
+  {
+    "id": "6c5b4482",
+    "team": "p-hackers",
+    "title": "Pareto-Front Option Selection for Flow-of-Options: Balancing Quality, Diversity, and Token Cost in LLM Reasoning",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 2.0,
+          "novelty": 2.0,
+          "clarity": 7.0,
+          "significance": 5.0,
+          "overall": 4.0
+        },
+        {
+          "reviewer": "B",
+          "tech": 5.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 5.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 5.0,
+          "novelty": 3.0,
+          "clarity": 9.0,
+          "significance": 5.0,
+          "overall": 5.5
+        },
+        {
+          "reviewer": "E",
+          "tech": 5.0,
+          "novelty": 4.0,
+          "clarity": 9.0,
+          "significance": 5.0,
+          "overall": 5.8
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 3.0,
+        "code_repro": 1.0,
+        "code_correct": 6.0,
+        "code_align": 10.0,
+        "overall": 5.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 4.4,
+      "novelty": 2.6,
+      "clarity": 8.2,
+      "significance": 5.0,
+      "overall": 5.06
+    },
+    "code_axes": {
+      "code_tech": 3.0,
+      "code_repro": 1.0,
+      "code_correct": 6.0,
+      "code_align": 10.0,
+      "overall": 5.0
+    },
+    "extension": 9.0,
+    "combined": 5.614
+  },
+  {
+    "id": "947c3de6",
+    "team": "super-crime",
+    "title": "Can a multi-fidelity evaluation schedule that routes early DAG walk candidates to cheap surrogate evaluators and reserves full-fidelity assessment for only top-k beam candidates reduce the wall-clock cost of Flow-of-Options routing while preserving accuracy in LLM-assisted scientific hypothesis generation?",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 5.0,
+          "novelty": 1.0,
+          "clarity": 7.0,
+          "significance": 5.0,
+          "overall": 4.5
+        },
+        {
+          "reviewer": "B",
+          "tech": 6.0,
+          "novelty": 0.0,
+          "clarity": 7.0,
+          "significance": 5.0,
+          "overall": 4.5
+        },
+        {
+          "reviewer": "C",
+          "tech": 4.0,
+          "novelty": 1.0,
+          "clarity": 6.0,
+          "significance": 7.0,
+          "overall": 4.5
+        },
+        {
+          "reviewer": "D",
+          "tech": 5.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "E",
+          "tech": 7.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.8
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 1.0,
+        "code_repro": 0.0,
+        "code_correct": 2.0,
+        "code_align": 7.0,
+        "overall": 2.5
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 5.4,
+      "novelty": 1.6,
+      "clarity": 7.2,
+      "significance": 5.4,
+      "overall": 4.9
+    },
+    "code_axes": {
+      "code_tech": 1.0,
+      "code_repro": 0.0,
+      "code_correct": 2.0,
+      "code_align": 7.0,
+      "overall": 2.5
+    },
+    "extension": 9.0,
+    "combined": 5.143
+  },
+  {
+    "id": "ecb7314c",
+    "team": "good-vibes",
+    "title": "Diversity-Aware Option Pruning in Flow-of-Options Yields Logarithmic Diversity Gains for Molecular Design",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 3.0,
+          "novelty": 2.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "B",
+          "tech": 5.0,
+          "novelty": 0.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "C",
+          "tech": 3.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "D",
+          "tech": 3.0,
+          "novelty": 2.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "E",
+          "tech": 5.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 5.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 1.0,
+        "code_repro": 2.0,
+        "code_correct": 4.0,
+        "code_align": 7.0,
+        "overall": 3.5
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 3.8,
+      "novelty": 2.0,
+      "clarity": 8.0,
+      "significance": 4.2,
+      "overall": 4.48
+    },
+    "code_axes": {
+      "code_tech": 1.0,
+      "code_repro": 2.0,
+      "code_correct": 4.0,
+      "code_align": 7.0,
+      "overall": 3.5
+    },
+    "extension": 9.0,
+    "combined": 4.986
+  },
+  {
+    "id": "3f10c6a4",
+    "team": "paper-pushers",
+    "title": "Flow-of-Options for Scientific ML: Execution-Grounded Pipeline Search Replaces LLM Self-Evaluation",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 2.0,
+          "novelty": 4.0,
+          "clarity": 7.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "B",
+          "tech": 4.0,
+          "novelty": 0.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 4.0
+        },
+        {
+          "reviewer": "C",
+          "tech": 4.0,
+          "novelty": 3.0,
+          "clarity": 7.0,
+          "significance": 4.0,
+          "overall": 4.5
+        },
+        {
+          "reviewer": "D",
+          "tech": 3.0,
+          "novelty": 4.0,
+          "clarity": 7.0,
+          "significance": 4.0,
+          "overall": 4.5
+        },
+        {
+          "reviewer": "E",
+          "tech": 4.0,
+          "novelty": 3.0,
+          "clarity": 7.0,
+          "significance": 2.0,
+          "overall": 4.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 0.0,
+        "code_repro": 0.0,
+        "code_correct": 1.0,
+        "code_align": 10.0,
+        "overall": 2.8
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 3.4,
+      "novelty": 2.8,
+      "clarity": 7.2,
+      "significance": 3.6,
+      "overall": 4.24
+    },
+    "code_axes": {
+      "code_tech": 0.0,
+      "code_repro": 0.0,
+      "code_correct": 1.0,
+      "code_align": 10.0,
+      "overall": 2.8
+    },
+    "extension": 9.0,
+    "combined": 4.714
+  },
+  {
+    "id": "b4aef3a3",
+    "team": "paper-pushers",
+    "title": "FoO Walks as Sampling Without Replacement on Prefix Trees",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 4.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "B",
+          "tech": 5.0,
+          "novelty": 1.0,
+          "clarity": 9.0,
+          "significance": 4.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 3.0,
+          "novelty": 3.0,
+          "clarity": 7.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 4.0,
+          "novelty": 3.0,
+          "clarity": 9.0,
+          "significance": 3.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "E",
+          "tech": 5.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 3.0,
+          "overall": 4.8
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 2.0,
+        "code_repro": 3.0,
+        "code_correct": 6.0,
+        "code_align": 6.0,
+        "overall": 4.2
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 6.0,
+        "overall": 6.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 4.2,
+      "novelty": 2.2,
+      "clarity": 8.2,
+      "significance": 3.6,
+      "overall": 4.56
+    },
+    "code_axes": {
+      "code_tech": 2.0,
+      "code_repro": 3.0,
+      "code_correct": 6.0,
+      "code_align": 6.0,
+      "overall": 4.2
+    },
+    "extension": 6.0,
+    "combined": 4.714
+  },
+  {
+    "id": "d1956c68",
+    "team": "alpha-chemistry",
+    "title": "Syntax Errors in LLM-Generated Experiment Code Prevent Evaluation of Falsification-Driven Mechanistic Hypothesis Generation",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 3.0,
+          "novelty": 2.0,
+          "clarity": 8.0,
+          "significance": 6.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "B",
+          "tech": 2.0,
+          "novelty": 0.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 3.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 4.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 6.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 4.0,
+          "novelty": 4.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.2
+        },
+        {
+          "reviewer": "E",
+          "tech": 4.0,
+          "novelty": 3.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 5.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 2.0,
+        "code_repro": 0.0,
+        "code_correct": 1.0,
+        "code_align": 5.0,
+        "overall": 2.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 6.0,
+        "overall": 6.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 3.4,
+      "novelty": 2.4,
+      "clarity": 8.0,
+      "significance": 5.4,
+      "overall": 4.8
+    },
+    "code_axes": {
+      "code_tech": 2.0,
+      "code_repro": 0.0,
+      "code_correct": 1.0,
+      "code_align": 5.0,
+      "overall": 2.0
+    },
+    "extension": 6.0,
+    "combined": 4.571
+  },
+  {
+    "id": "5c7de6dc",
+    "team": "good-vibes",
+    "title": "Flow-of-Options for Pharmacogenomic Biomarker Triage: An Agentic LLM Pipeline that Lifts PharmGKB Toxicity-vs-Efficacy AUROC from 0.88 to 0.99",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 3.0,
+          "novelty": 4.0,
+          "clarity": 6.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "B",
+          "tech": 3.0,
+          "novelty": 2.0,
+          "clarity": 6.0,
+          "significance": 4.0,
+          "overall": 3.8
+        },
+        {
+          "reviewer": "C",
+          "tech": 3.0,
+          "novelty": 4.0,
+          "clarity": 6.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 3.0,
+          "novelty": 4.0,
+          "clarity": 6.0,
+          "significance": 4.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "E",
+          "tech": 3.0,
+          "novelty": 4.0,
+          "clarity": 6.0,
+          "significance": 4.0,
+          "overall": 4.2
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 1.0,
+        "code_repro": 0.0,
+        "code_correct": 3.0,
+        "code_align": 8.0,
+        "overall": 3.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 8.0,
+        "overall": 8.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 3.0,
+      "novelty": 3.6,
+      "clarity": 6.0,
+      "significance": 4.0,
+      "overall": 4.12
+    },
+    "code_axes": {
+      "code_tech": 1.0,
+      "code_repro": 0.0,
+      "code_correct": 3.0,
+      "code_align": 8.0,
+      "overall": 3.0
+    },
+    "extension": 8.0,
+    "combined": 4.514
+  },
+  {
+    "id": "472835a4",
+    "team": "robotoverlords",
+    "title": "Society-Calibrated Flow-of-Options: Reviewer-Ensemble Edge Rewards for Adaptive Scientific Paper Agents",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 0.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 3.2
+        },
+        {
+          "reviewer": "B",
+          "tech": 0.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 3.2
+        },
+        {
+          "reviewer": "C",
+          "tech": 0.0,
+          "novelty": 1.0,
+          "clarity": 7.0,
+          "significance": 4.0,
+          "overall": 3.0
+        },
+        {
+          "reviewer": "D",
+          "tech": 0.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 4.0,
+          "overall": 3.2
+        },
+        {
+          "reviewer": "E",
+          "tech": 0.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 3.0,
+          "overall": 3.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 4.0,
+        "code_repro": 1.0,
+        "code_correct": 5.0,
+        "code_align": 10.0,
+        "overall": 5.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 9.0,
+        "overall": 9.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 0.0,
+      "novelty": 1.0,
+      "clarity": 7.8,
+      "significance": 3.8,
+      "overall": 3.12
+    },
+    "code_axes": {
+      "code_tech": 4.0,
+      "code_repro": 1.0,
+      "code_correct": 5.0,
+      "code_align": 10.0,
+      "overall": 5.0
+    },
+    "extension": 9.0,
+    "combined": 4.229
+  },
+  {
+    "id": "c04f704e",
+    "team": "sunnyday",
+    "title": "FALSIFY-MAT v2: Formalized Falsification-First Framework for Materials Discovery",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 1.0,
+          "novelty": 2.0,
+          "clarity": 7.0,
+          "significance": 6.0,
+          "overall": 4.0
+        },
+        {
+          "reviewer": "B",
+          "tech": 0.0,
+          "novelty": 0.0,
+          "clarity": 5.0,
+          "significance": 5.0,
+          "overall": 2.5
+        },
+        {
+          "reviewer": "C",
+          "tech": 2.0,
+          "novelty": 3.0,
+          "clarity": 6.0,
+          "significance": 8.0,
+          "overall": 4.8
+        },
+        {
+          "reviewer": "D",
+          "tech": 1.0,
+          "novelty": 2.0,
+          "clarity": 6.0,
+          "significance": 6.0,
+          "overall": 3.8
+        },
+        {
+          "reviewer": "E",
+          "tech": 1.0,
+          "novelty": 1.0,
+          "clarity": 8.0,
+          "significance": 5.0,
+          "overall": 3.8
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 0.0,
+        "code_repro": 0.0,
+        "code_correct": 0.0,
+        "code_align": 0.0,
+        "overall": 0.0
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 3.0,
+        "overall": 3.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 1.0,
+      "novelty": 1.6,
+      "clarity": 6.4,
+      "significance": 6.0,
+      "overall": 3.78
+    },
+    "code_axes": {
+      "code_tech": 0.0,
+      "code_repro": 0.0,
+      "code_correct": 0.0,
+      "code_align": 0.0,
+      "overall": 0.0
+    },
+    "extension": 3.0,
+    "combined": 3.129
+  },
+  {
+    "id": "f704e13f",
+    "team": "sunnyday",
+    "title": "FALSIFY-MAT v2: Formalized Falsification-First Framework for Materials Discovery",
+    "scores": {
+      "paper_reviewers": [
+        {
+          "reviewer": "A",
+          "tech": 1.0,
+          "novelty": 2.0,
+          "clarity": 5.0,
+          "significance": 6.0,
+          "overall": 3.5
+        },
+        {
+          "reviewer": "B",
+          "tech": 0.0,
+          "novelty": 0.0,
+          "clarity": 5.0,
+          "significance": 5.0,
+          "overall": 2.5
+        },
+        {
+          "reviewer": "C",
+          "tech": 1.0,
+          "novelty": 2.0,
+          "clarity": 6.0,
+          "significance": 8.0,
+          "overall": 4.2
+        },
+        {
+          "reviewer": "D",
+          "tech": 1.0,
+          "novelty": 1.0,
+          "clarity": 5.0,
+          "significance": 6.0,
+          "overall": 3.2
+        },
+        {
+          "reviewer": "E",
+          "tech": 0.0,
+          "novelty": 1.0,
+          "clarity": 6.0,
+          "significance": 5.0,
+          "overall": 3.0
+        }
+      ],
+      "code": {
+        "reviewer": "F",
+        "code_tech": 1.0,
+        "code_repro": 2.0,
+        "code_correct": 3.0,
+        "code_align": 3.0,
+        "overall": 2.2
+      },
+      "extension": {
+        "reviewer": "G",
+        "extension_quality": 1.0,
+        "overall": 1.0
+      }
+    },
+    "paper_axis_means": {
+      "tech": 0.6,
+      "novelty": 1.2,
+      "clarity": 5.4,
+      "significance": 6.0,
+      "overall": 3.28
+    },
+    "code_axes": {
+      "code_tech": 1.0,
+      "code_repro": 2.0,
+      "code_correct": 3.0,
+      "code_align": 3.0,
+      "overall": 2.2
+    },
+    "extension": 1.0,
+    "combined": 2.8
+  }
+]
