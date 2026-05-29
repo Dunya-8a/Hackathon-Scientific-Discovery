@@ -1,0 +1,23 @@
+[
+  {
+    "paper_id": "synthesis-60ccba3b",
+    "title": "Engineering Reliable Scientific Writing Agents: A Practical Synthesis",
+    "score": 0.0,
+    "bt_uncertainty": 0.0,
+    "stage1_score": 1.3333
+  },
+  {
+    "paper_id": "strong-foo",
+    "title": "Walk-Memory Conditioning Cuts Flow-of-Options Sampling Collisions by 78%",
+    "score": 0.0,
+    "bt_uncertainty": 0.0,
+    "stage1_score": 1.0
+  },
+  {
+    "paper_id": "mediocre-rag",
+    "title": "A Retrieval-Augmented Outline Generator for Long Documents",
+    "score": 0.0,
+    "bt_uncertainty": 0.0,
+    "stage1_score": 1.0
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "paper_id": "strong-foo",
+    "title": "Walk-Memory Conditioning Cuts Flow-of-Options Sampling Collisions by 78%",
+    "score": 8.5733,
+    "bt_uncertainty": 2.3501,
+    "stage1_score": 1.0
+  },
+  {
+    "paper_id": "synthesis-60ccba3b",
+    "title": "Engineering Reliable Scientific Writing Agents: A Practical Synthesis",
+    "score": 2.9753,
+    "bt_uncertainty": 2.672,
+    "stage1_score": 1.3333
+  },
+  {
+    "paper_id": "weak-method-bias",
+    "title": "Cross-Model Option Generation Reduces Method Bias in Flow-of-Options",
+    "score": 1.9288,
+    "bt_uncertainty": 1.7417,
+    "stage1_score": 1.0
+  },
+  {
+    "paper_id": "mediocre-prompt",
+    "title": "Prompt Templates for Consistent JSON Output from LLMs",
+    "score": -2.1078,
+    "bt_uncertainty": 2.9022,
+    "stage1_score": 1.0
+  },
+  {
+    "paper_id": "mediocre-rag",
+    "title": "A Retrieval-Augmented Outline Generator for Long Documents",
+    "score": -3.9539,
+    "bt_uncertainty": 2.2035,
+    "stage1_score": 1.0
+  },
+  {
+    "paper_id": "donut-817f153e",
+    "title": "The Cultural and Culinary History of the Donut",
+    "score": -7.4157,
+    "bt_uncertainty": 2.9999,
+    "stage1_score": 1.0
+  }
+]

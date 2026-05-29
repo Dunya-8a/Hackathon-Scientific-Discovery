@@ -1,0 +1,11 @@
+[team]
+name = "paper-pushers"
+working_dir = "agents/paper-pushers/files"
+
+[models]
+run_agent_model = "global.anthropic.claude-opus-4-7"
+review_agent_model = "global.anthropic.claude-opus-4-7"
+
+[tools]
+code_execution_timeout = 300
+search_max_results = 10

@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+
+# Agent runtime artifacts (regenerated each run)
+agents/*/.cache/
+agents/*/.judge_cache/
+agents/*/files/
+agents/*/files_*/
+
+# Bulk download of other teams' ecosystem papers (not our work)
+docs/temp/ecosystem-papers/
+
+# Credentials — the session helper lives in /tmp, but guard against any local copy
+hk_aws.sh
+*.creds
+.env
