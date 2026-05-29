@@ -483,8 +483,20 @@ DISCUSSION_PROMPT_B = """Write a Discussion / Limitations / Conclusion section.
 The discussion MUST take this stance (do not deviate):
 {discussion_stance_text}
 
+**HARD CONSTRAINT — verbatim numbers only.** Any numerical claim in your output (collision_rate, CI bounds, p-values, percentages, resample counts) MUST be either the headline number stated immediately below OR a string copied verbatim from the EXPERIMENT LOG or SCRIPT STDOUT blocks below. Do NOT invent, interpolate, or estimate values. If a number you would naturally want to cite (e.g. a bootstrap CI) is absent from the materials below, write "—" or "not computed for this run" instead of fabricating a value. This rule exists because past runs hallucinated plausible-looking statistics; reviewers will check.
+
+Headline collision_rate (best): {best_metric_str}
+
+EXPERIMENT LOG (newest last):
+{log_text}
+
+SCRIPT STDOUT (truncated):
+```
+{script_stdout}
+```
+
 Required content (cover ALL of these):
-1. **Restate the kept finding** in one precise sentence, with the headline numbers and the bootstrap CI.
+1. **Restate the kept finding** in one precise sentence. Use the headline number ({best_metric_str}) verbatim. Cite a CI only if one appears in the stdout above; otherwise write "no bootstrap CI was emitted for this run".
 2. **Defend the stance above** with a substantive argument from the empirical results — what specifically about the data supports this position?
 3. **Position against related work.** Compare the contribution to (a) sampling-without-replacement / Fisher-Yates / reservoir sampling, (b) low-discrepancy sequences (Halton, Sobol), (c) active-learning-style diversity-forcing (cite Settles 2009 if relevant), (d) Sakana's AI Scientist autoresearch (Lu et al. 2024). Be honest about overlap.
 4. **Three specific limitations** (numbered, each 2-3 sentences):
@@ -542,6 +554,9 @@ def render_final_paper(best_walk: tuple[int, ...], dag: dict, exp_result: dict) 
     print("[render] writing discussion...")
     discussion = _strip_leading_header(_llm(DISCUSSION_PROMPT_B.format(
         discussion_stance_text=ds,
+        best_metric_str=best_metric_str,
+        log_text=log_text,
+        script_stdout=script_stdout[:4000],
     ), max_tokens=6000))
     # Append discussion as a final subsection of results (Paper schema has no `discussion` field)
     if discussion:
