@@ -34,12 +34,14 @@ from typing import Optional
 
 from hackathon_science import Paper
 from hackathon_science.tools import run_code
-from hackathon_science.utils import call_llm
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from llm import chat as _chat, STRONG_MODEL  # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
 
-MODEL = "global.anthropic.claude-opus-4-7"
+MODEL = STRONG_MODEL   # provider-routed; override via LLM_STRONG_MODEL env (see llm.py)
 WORKING_DIR = Path(__file__).parent / "files"
 PAPERS_DIR = Path(__file__).parent / "papers"  # persistent archive — .cache/ gets clobbered every run
 
@@ -57,27 +59,15 @@ FOO_LIMITATIONS = [
 
 def _llm(user: str, system: str = "", model: str = MODEL, max_tokens: int = 4000,
          retry_on_empty: bool = True) -> str:
-    """One-shot Bedrock Converse call. Returns just the text or '' on error.
+    """Provider-routed call (see llm.chat). Returns text or '' on error.
 
     Retries ONCE if the first response is empty (no content) — empty responses
     silently fall through to fallback strings otherwise, producing thin papers.
     """
-    messages = [{"role": "user", "content": [{"text": user}]}]
-    kwargs = {"inferenceConfig": {"maxTokens": max_tokens}}
-    if system:
-        kwargs["system"] = [{"text": system}]
     for attempt in range(2 if retry_on_empty else 1):
-        try:
-            r = call_llm(messages=messages, model_id=model, **kwargs)
-            content = r.get("output", {}).get("message", {}).get("content", [])
-            text = content[0].get("text", "") if content else ""
-            if text.strip():
-                return text
-        except Exception as e:
-            print(f"[_llm] error (attempt {attempt+1}): {e}", file=sys.stderr)
-            if attempt == 0 and retry_on_empty:
-                continue
-            return ""
+        text = _chat(user, system=system, model=model, max_tokens=max_tokens)
+        if text.strip():
+            return text
     return ""
 
 

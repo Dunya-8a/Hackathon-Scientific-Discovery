@@ -41,18 +41,24 @@ import numpy as np
 from scipy.optimize import minimize
 
 from hackathon_science.git_ops import load_papers
-from hackathon_science.utils import call_llm
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from llm import chat as _chat, STRONG_MODEL, FAST_MODEL   # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
-
-SONNET = "global.anthropic.claude-sonnet-4-6"
-OPUS = "global.anthropic.claude-opus-4-7"
+#
+# Model tiers come from the shared llm helper (env-overridable via
+# LLM_FAST_MODEL / LLM_STRONG_MODEL; defaults to the direct Anthropic API on the
+# same Sonnet/Opus tiers the hackathon used). llm.chat routes by id prefix:
+# claude-* -> Anthropic, gpt-/o1-/o3- -> OpenAI, else -> Bedrock.
+SONNET = FAST_MODEL       # Stage 1 + early tournament rounds
+OPUS = STRONG_MODEL       # tournament finals
 
 STAGE1_KEEP = 50          # Stage 1 funnel width (1000 -> 50)
 STAGE1_SAMPLES = 3        # pointwise samples per paper, averaged
 STAGE1_TEMP = 0.7
-OPUS_FINALS_FIELD = 8     # use Opus once the live field is <= this size
+OPUS_FINALS_FIELD = 8     # use the strong model once the live field is <= this size
 BOOTSTRAP_ITERS = 200     # BT uncertainty (no LLM calls — cheap)
 
 CACHE_DIR = Path(__file__).parent / ".judge_cache"
@@ -62,25 +68,9 @@ CACHE_DIR = Path(__file__).parent / ".judge_cache"
 
 def _llm(user: str, system: str, model: str, temperature: float = 0.0,
          max_tokens: int = 2000) -> str:
-    """One-shot Bedrock Converse call. Returns text, or '' on error/empty."""
-    messages = [{"role": "user", "content": [{"text": user}]}]
-    inference = {"maxTokens": max_tokens}
-    # Opus 4.7 rejects `temperature` outright; for deterministic (T=0) calls we
-    # simply omit it. Only the sampled Stage-1 rolls (T>0, Sonnet) send it.
-    if temperature and temperature > 0:
-        inference["temperature"] = temperature
-    try:
-        r = call_llm(
-            messages=messages,
-            model_id=model,
-            system=[{"text": system}],
-            inferenceConfig=inference,
-        )
-        content = r.get("output", {}).get("message", {}).get("content", [])
-        return content[0].get("text", "") if content else ""
-    except Exception as e:
-        print(f"[judge._llm] error ({model}): {e}", file=sys.stderr)
-        return ""
+    """One-shot LLM call via the shared provider-routed helper (see llm.chat)."""
+    return _chat(user, system=system, model=model, temperature=temperature,
+                 max_tokens=max_tokens)
 
 
 # --- Paper loading + metadata stripping ---------------------------------

@@ -14,40 +14,31 @@ import json
 import random
 import re
 import sys
-from typing import Any, Optional
+from pathlib import Path
+from typing import Optional
 
 from hackathon_science import Paper
-from hackathon_science.utils import call_llm
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from llm import chat as _chat, STRONG_MODEL, FAST_MODEL   # noqa: E402
 
-OPUS = "global.anthropic.claude-opus-4-7"
-SONNET = "global.anthropic.claude-sonnet-4-6"
+# Strong (area chair / revision) and fast (reviewer panel) tiers. Default to the
+# direct Anthropic API; override the backend via LLM_STRONG_MODEL / LLM_FAST_MODEL
+# env vars (Bedrock global.anthropic.* or OpenAI gpt-*). See llm.py.
+OPUS = STRONG_MODEL
+SONNET = FAST_MODEL
 
 
 # --- LLM helpers --------------------------------------------------------
 
 def _llm_call(user: str, model: str, system: str = "", temperature: Optional[float] = None,
               max_tokens: int = 4000) -> str:
-    """Single Bedrock Converse call. Opus 4.7 rejects `temperature` in inferenceConfig,
-    so omit it for Opus; pass for Sonnet."""
-    messages = [{"role": "user", "content": [{"text": user}]}]
-    inf_cfg: dict[str, Any] = {"maxTokens": max_tokens}
-    if temperature is not None and model == SONNET:
-        inf_cfg["temperature"] = temperature
-    kwargs = {"inferenceConfig": inf_cfg}
-    if system:
-        kwargs["system"] = [{"text": system}]
+    """Single provider-routed call (see llm.chat). Retries once on empty."""
     for attempt in range(2):
-        try:
-            r = call_llm(messages=messages, model_id=model, **kwargs)
-            content = r.get("output", {}).get("message", {}).get("content", [])
-            text = content[0].get("text", "") if content else ""
-            if text.strip():
-                return text
-        except Exception as e:
-            print(f"[critic] error (attempt {attempt+1}, model={model}): {e}", file=sys.stderr)
-            if attempt == 0:
-                continue
+        text = _chat(user, system=system, model=model, temperature=temperature,
+                     max_tokens=max_tokens)
+        if text.strip():
+            return text
     return ""
 
 
