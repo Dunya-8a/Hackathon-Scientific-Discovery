@@ -157,7 +157,7 @@ print(f"METRIC collision_rate={collision_rate:.4f}")
 
 # --- Autoresearch loop --------------------------------------------------
 
-BASELINE_PROMPT = """Design a minimal, self-contained Python script that measures one stated limitation of {anchor}.
+BASELINE_PROMPT = """Design a self-contained Python script that measures one stated limitation of {anchor}.
 
 Limitation under study: "{limitation}"
 Metric name: {metric_name} (direction: minimize)
@@ -165,9 +165,26 @@ Metric name: {metric_name} (direction: minimize)
 Definition of {metric_name}: 1 - (unique_walks / total_walks) for uniform-random walk
 sampling over a synthetic FoO DAG with K options per depth, D depths, N walks.
 
-HARD CONSTRAINTS on the script:
-1. Only stdlib (random) — do NOT import numpy or any third-party libraries.
-2. Set random.seed(0) explicitly at the top.
+ENGINEERING STRUCTURE (Code Tech Quality is graded separately by Reviewer F —
+past runs scored 2/10 on bare procedural scripts even when the math was
+correct; the following are non-negotiable even for trivial algorithms):
+
+  - A module-level docstring (triple-quoted) at the top describing the
+    experiment and what `{metric_name}` measures.
+  - The walk sampler implemented as a function with PEP-484 type hints AND a
+    one-line docstring. Example shape:
+        def sample_walks(K: int, D: int, N: int, seed: int) -> list[tuple[int, ...]]:
+            \"\"\"Sample N walks of length D over K options, given a seed.\"\"\"
+  - A `def main() -> None:` function at the bottom that wires constants
+    together, calls the sampler, runs the correctness gate, computes
+    {metric_name}, and prints the METRIC line.
+  - `if __name__ == "__main__": main()` guard at the very bottom.
+  - Imports at the top, constants in UPPER_CASE.
+
+HARD CONSTRAINTS on behavior:
+1. Only stdlib (random, collections, itertools, math) — do NOT import numpy
+   or any third-party libraries.
+2. Set random.seed(0) explicitly in main() (or pass seed=0 to the sampler).
 3. Print these lines BEFORE the metric (in order):
    - "CONFIG: K=<int>, D=<int>, N=<int>, seed=0"
    - "INPUT: <one-line description>"
@@ -208,8 +225,11 @@ Propose ONE focused improvement that is MECHANISTICALLY DISTINCT from every prio
 If the current best already achieves the theoretical minimum (e.g., 0.0 collision rate), propose a CHANGE OF METRIC SCOPE instead: vary N, K, or D and observe behaviour. Document this clearly in your PLAN line.
 
 Constraints unchanged from the baseline:
-  - stdlib only (random, collections, itertools allowed; no numpy, no third-party)
-  - seeded with random.seed(0)
+  - Preserve the engineering structure of the current best (module docstring,
+    typed functions with docstrings, def main(), __name__ guard). Do NOT
+    collapse into a procedural block — that lands Code Tech Quality at 2/10.
+  - stdlib only (random, collections, itertools, math allowed; no numpy, no third-party)
+  - seeded with random.seed(0) inside main() (or seed=0 passed to the sampler)
   - CONFIG, INPUT lines first; assertions before metric
   - single final "METRIC {metric_name}=<float:.4f>" line
   - under 5 seconds
@@ -356,13 +376,18 @@ Context:
 - Approach: Karpathy-style autoresearch loop on a single Python script (cite: Karpathy 2026, "autoresearch" GitHub repository). Baseline + K=3 iterative proposals. Single scalar metric ({metric_name}, lower is better). Correctness gate runs before metric; failed gates trigger a revert that restores the best-known script.
 - Discipline: section-by-section composition (cite: Lu et al. 2024, "The AI Scientist", arxiv 2408.06292).
 
-External literature retrieved (cite at most one [L#] entry by title for sampling-method context; do NOT invent additional sources):
+External literature retrieved (cite as [L#] in prose where actually relevant; do NOT invent additional sources or pad citations):
 {literature}
 
 CRITICAL: the EXACT script that ran for the reported results is shown below. Any numerical constant you cite (K, D, N, seed, etc.) MUST match this script verbatim. If you state K=4 and D=5, the script must show K=4 and D=5. Do NOT invent values.
 
 ```python
 {best_script}
+```
+
+SCRIPT STDOUT (the actual lines the script produced — describe ONLY what is here, do not invent additional samplers, configurations, or analyses):
+```
+{script_stdout}
 ```
 
 Required content (in order, each ~1 paragraph):
@@ -372,6 +397,8 @@ Required content (in order, each ~1 paragraph):
 4. The correctness-gate-before-metric discipline: assertions run before METRIC is printed, so a script that produces a number AT ALL has already passed validity checks. Cite [L#] if a retrieved source describes a similar pattern.
 5. Reproducibility: explicit seed (random.seed(0)), stdlib-only dependencies, deterministic data generation, single self-contained script.
 6. Honest scope: we extend FoO's walk-sampling mechanism specifically; we do not claim a general improvement to FoO.
+
+**HARD CONSTRAINT** (Reviewer F docks Code-Paper Alignment for this): every claim in this Methods section must be backed by either the script code above OR the script stdout above. Do not describe an ablation the script did not run; do not name a sampler that is not implemented as a function in the script; do not invent statistical analyses (bootstrap CIs, permutation tests) the script did not compute.
 
 Do NOT start with a "## Methods" header — the platform adds section headers itself. Begin directly with prose.
 
@@ -732,9 +759,19 @@ def compose_paper(problem_domain: str, result: dict, literature: Optional[list[d
 
     print("[compose] writing methods...")
     best_script = result["best"][1] if result["best"] else "(no successful run — see appendix)"
+    # Re-run best script once so Methods can describe what actually printed
+    # (closes the Code-Paper Alignment gap Reviewer F flagged on b4aef3a3).
+    script_stdout = ""
+    if result["best"]:
+        try:
+            script_stdout = run_code(result["best"][1], filename="script.py",
+                                     working_dir=str(WORKING_DIR))
+        except Exception as e:
+            script_stdout = f"(failed to re-run for stdout capture: {e})"
     methods = _strip_leading_header(_llm(METHODS_PROMPT.format(
         anchor=FOO_ANCHOR, limitation=FOO_LIMITATIONS[3], metric_name=metric_name,
         best_script=best_script, literature=lit_text,
+        script_stdout=script_stdout[:4000],
     ))) or "We simulate FoO walk sampling and apply an autoresearch loop to iteratively improve a single scalar metric."
 
     print("[compose] writing results narrative...")
