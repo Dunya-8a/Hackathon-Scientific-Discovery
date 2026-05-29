@@ -9,7 +9,7 @@ Phase A scope:
   - Autoresearch loop: baseline + 3 attempts on a single script.py
   - METRIC parse + GATE check + revert-writes-best
   - Section-by-section paper composition (Sakana v1 pattern)
-  - Lightweight literature mining via search_web (pulled forward from Phase B)
+  - Lightweight literature mining via OpenAlex (academic-grade, replaces DDG)
   - Deterministic experiment-log table + Discussion section (defense-pass-aligned)
 
 Out of scope (Phase B+):
@@ -25,12 +25,14 @@ from pathlib import Path
 from typing import Optional
 
 from hackathon_science import Paper
-from hackathon_science.tools import run_code, search_web
+from hackathon_science.tools import run_code
 from hackathon_science.utils import call_llm
 
-# Persistent local archive — .cache/paper_draft.* gets clobbered every run.
+# Shared helpers — single source of truth in my_run_agent.py.
+# `gather_literature` is the OpenAlex-backed academic search (was DDG).
+# `archive_paper` snapshots every paper to agents/paper-pushers/papers/.
 sys.path.insert(0, str(Path(__file__).parent))
-from my_run_agent import archive_paper  # noqa: E402
+from my_run_agent import archive_paper, gather_literature  # noqa: E402
 
 
 # --- Configuration ------------------------------------------------------
@@ -429,42 +431,10 @@ REFERENCES = """1. Nair, L., Trase, I., & Kim, M. (2025). Flow-of-Options: Diver
 """
 
 
-# --- Literature mining (search_web grounding) --------------------------
-
-LIT_QUERIES = [
-    "Flow-of-Options Nair Trase Kim LLM reasoning arxiv 2502.12929",
-    "autoresearch agent LLM iterative script optimization metric",
-    "walk sampling diversity DAG beam search collision rate",
-    "low-discrepancy sequence quasi random sampling reasoning",
-]
-
-
-def gather_literature(max_total: int = 8) -> list[dict]:
-    """Run a few search_web queries and return deduped [{title,url,snippet}, ...].
-
-    Failures are non-fatal — the paper still composes without literature context.
-    """
-    seen_urls: set[str] = set()
-    out: list[dict] = []
-    for q in LIT_QUERIES:
-        if len(out) >= max_total:
-            break
-        try:
-            hits = search_web(q, max_results=5)
-        except Exception as e:
-            print(f"[lit] search failed for {q!r}: {e}", file=sys.stderr)
-            continue
-        for h in hits:
-            url = (h.get("url") or "").strip()
-            title = (h.get("title") or "").strip()
-            if not url or not title or url in seen_urls:
-                continue
-            seen_urls.add(url)
-            out.append({"title": title, "url": url, "snippet": (h.get("snippet") or "").strip()})
-            if len(out) >= max_total:
-                break
-    print(f"[lit] retrieved {len(out)} unique sources")
-    return out
+# --- Literature mining ---
+# `gather_literature` is imported from my_run_agent (OpenAlex-backed). The
+# rendering helpers _lit_block / _augment_references stay local because
+# they're trivial format functions and importing private names is a smell.
 
 
 def _lit_block(literature: list[dict]) -> str:
@@ -639,7 +609,7 @@ def run(problem_domain: str, papers_dir: Optional[Path] = None) -> Paper:
     else:
         print(f"[run] no successful experiment — paper will note this")
 
-    print("[run] gathering literature via search_web...")
+    print("[run] gathering literature via OpenAlex...")
     literature = gather_literature(max_total=8)
 
     paper = compose_paper(problem_domain, result, literature=literature)

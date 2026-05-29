@@ -9,7 +9,7 @@ Phase A scope:
   - Autoresearch loop: baseline + 3 attempts on a single script.py
   - METRIC parse + GATE check + revert-writes-best
   - Section-by-section paper composition (Sakana v1 pattern)
-  - Lightweight literature mining via search_web (pulled forward from Phase B)
+  - Lightweight literature mining via OpenAlex (academic-grade, replaces DDG)
   - Deterministic experiment-log table + Discussion section (defense-pass-aligned)
 
 Out of scope (Phase B+):
@@ -28,8 +28,11 @@ from pathlib import Path
 from typing import Optional
 
 from hackathon_science import Paper
-from hackathon_science.tools import run_code, search_web
+from hackathon_science.tools import run_code
 from hackathon_science.utils import call_llm
+
+import urllib.parse
+import urllib.request
 
 
 # --- Configuration ------------------------------------------------------
@@ -429,41 +432,108 @@ REFERENCES = """1. Nair, L., Trase, I., & Kim, M. (2025). Flow-of-Options: Diver
 """
 
 
-# --- Literature mining (search_web grounding) --------------------------
+# --- Literature mining (OpenAlex, replaces DDG) ------------------------
+#
+# OpenAlex (https://openalex.org) is a free, no-auth scholarly index covering
+# ~250M works. Polite usage convention is to include a contact email in the
+# User-Agent so they can throttle abuse without blocking everyone.
 
 LIT_QUERIES = [
-    "Flow-of-Options Nair Trase Kim LLM reasoning arxiv 2502.12929",
-    "autoresearch agent LLM iterative script optimization metric",
-    "walk sampling diversity DAG beam search collision rate",
-    "low-discrepancy sequence quasi random sampling reasoning",
+    "Flow-of-Options Nair Trase Kim LLM reasoning",
+    "autoresearch LLM agent iterative script optimization",
+    "walk sampling diversity DAG beam search",
+    "low-discrepancy quasi-random sampling reasoning",
 ]
+
+OPENALEX_ENDPOINT = "https://api.openalex.org/works"
+OPENALEX_USER_AGENT = "paper-pushers/0.1 (mailto:contact@augmentationlab.org)"
+LIT_TIMEOUT_SECS = 10.0
+
+
+def _abstract_from_inverted(inv: Optional[dict]) -> str:
+    """OpenAlex ships abstracts as {word: [positions]}. Reconstruct prose."""
+    if not inv:
+        return ""
+    positions: dict[int, str] = {}
+    for word, idxs in inv.items():
+        for i in idxs:
+            positions[i] = word
+    return " ".join(positions[i] for i in sorted(positions))
+
+
+def _format_authors(authorships: list[dict], max_authors: int = 3) -> str:
+    names = [(a.get("author") or {}).get("display_name", "") for a in authorships[:max_authors]]
+    names = [n for n in names if n]
+    if not names:
+        return ""
+    suffix = " et al." if len(authorships) > max_authors else ""
+    return ", ".join(names) + suffix
+
+
+def _openalex_to_lit_entry(w: dict) -> Optional[dict]:
+    """Normalize an OpenAlex Work into our {title, url, snippet} shape."""
+    title = (w.get("title") or "").strip()
+    if not title:
+        return None
+    abstract = _abstract_from_inverted(w.get("abstract_inverted_index"))
+    authors = _format_authors(w.get("authorships") or [])
+    year = w.get("publication_year")
+    # URL preference: DOI > OpenAlex landing page
+    url = w.get("doi") or w.get("id") or ""
+    head_bits = [b for b in [authors, f"({year})" if year else ""] if b]
+    head = " ".join(head_bits).strip()
+    snippet = (f"{head}. {abstract}" if head else abstract).strip(". ").strip()
+    return {"title": title, "url": url, "snippet": snippet}
+
+
+def _openalex_search(query: str, per_page: int = 5) -> list[dict]:
+    """Query OpenAlex /works. Raises on network/parse error."""
+    params = urllib.parse.urlencode({
+        "search": query,
+        "per-page": per_page,
+        "select": "id,doi,title,abstract_inverted_index,publication_year,authorships",
+    })
+    req = urllib.request.Request(
+        f"{OPENALEX_ENDPOINT}?{params}",
+        headers={"User-Agent": OPENALEX_USER_AGENT, "Accept": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=LIT_TIMEOUT_SECS) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+    return payload.get("results", []) or []
 
 
 def gather_literature(max_total: int = 8) -> list[dict]:
-    """Run a few search_web queries and return deduped [{title,url,snippet}, ...].
+    """Pull deduped academic sources from OpenAlex. Returns [{title,url,snippet}, ...].
 
-    Failures are non-fatal — the paper still composes without literature context.
+    Failures (network, JSON, OpenAlex outage) are non-fatal — the paper still
+    composes without literature context, just with weaker grounding.
     """
     seen_urls: set[str] = set()
+    seen_titles: set[str] = set()
     out: list[dict] = []
     for q in LIT_QUERIES:
         if len(out) >= max_total:
             break
         try:
-            hits = search_web(q, max_results=5)
+            works = _openalex_search(q, per_page=5)
         except Exception as e:
-            print(f"[lit] search failed for {q!r}: {e}", file=sys.stderr)
+            print(f"[lit] OpenAlex query failed for {q!r}: {e}", file=sys.stderr)
             continue
-        for h in hits:
-            url = (h.get("url") or "").strip()
-            title = (h.get("title") or "").strip()
-            if not url or not title or url in seen_urls:
+        for w in works:
+            entry = _openalex_to_lit_entry(w)
+            if not entry:
                 continue
-            seen_urls.add(url)
-            out.append({"title": title, "url": url, "snippet": (h.get("snippet") or "").strip()})
+            url_key = entry["url"].lower()
+            title_key = entry["title"].lower()
+            if (url_key and url_key in seen_urls) or title_key in seen_titles:
+                continue
+            if url_key:
+                seen_urls.add(url_key)
+            seen_titles.add(title_key)
+            out.append(entry)
             if len(out) >= max_total:
                 break
-    print(f"[lit] retrieved {len(out)} unique sources")
+    print(f"[lit] OpenAlex returned {len(out)} unique sources")
     return out
 
 
@@ -690,7 +760,7 @@ def run(problem_domain: str, papers_dir: Optional[Path] = None) -> Paper:
     else:
         print(f"[run] no successful experiment — paper will note this")
 
-    print("[run] gathering literature via search_web...")
+    print("[run] gathering literature via OpenAlex...")
     literature = gather_literature(max_total=8)
 
     paper = compose_paper(problem_domain, result, literature=literature)
