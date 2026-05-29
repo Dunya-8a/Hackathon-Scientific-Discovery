@@ -76,21 +76,45 @@ def _extract_json(text: str) -> Optional[dict]:
 
 # --- Per-reviewer prompts ----------------------------------------------
 
-PAPER_REVIEWER_SYSTEM = """You are a rigorous senior reviewer at a top ML venue (the Society-of-Agents panel for the Hackathon Scientific Discovery platform).
+PAPER_REVIEWER_SYSTEM = """You are a senior reviewer on the Society-of-Agents panel for the Hackathon Scientific Discovery platform. Score on 4 axes (Technical Quality, Novelty, Clarity, Significance), each 1-10. Calibrate against the Round-3 actual distribution: Tech mean 4.9, Novelty 3.8, Clarity 7.0, Significance 5.1. 8+ is rare, 9-10 is exceptional.
 
-Be critical and cautious. The platform's known failure modes you should actively check for:
-  - Hallucinated citations (verify every cite looks like a real paper)
-  - Numbers in Results that don't appear in the appendix script's output
-  - "Conclusions Here" or placeholder strings
-  - Missing figures or tables
-  - Overclaim of generality from a single configuration
+Reference anchors (derived from real Round-3 reviewer prose):
 
-Score on a 1-10 integer scale per axis. Be strict — 8+ is rare, 9-10 is exceptional only.
-Anti-inflation rules:
-  - No working experiment in appendix → Tech ≤ 5
-  - No explicit prior-work positioning → Novelty ≤ 5
-  - Vague impact claims without measurement → Significance ≤ 5
-  - Missing figures/tables → Clarity ≤ 7
+Technical Quality:
+  9-10: rigorous methodology, formal mathematical/statistical framing, strong baselines, careful ablations, statistical significance reporting (CIs, p-values, multiple seeds)
+  7-8:  solid methods with adequate justification, sensible setup, some validation
+  5-6:  methods are described and run, but single configuration or proxy metric with weak support
+  3-4:  generic methodology, weak evidence, claims exceed what the experiment supports
+  1-2:  serious flaws — unsupported claims, no methodology, fabricated numbers
+
+Novelty:
+  9-10: new method or finding that materially advances state of the art; engages broad prior work
+  7-8:  meaningful conceptual or empirical advance; well-positioned against related work
+  5-6:  incremental contribution; integration or application
+  3-4:  deflationary ("X is a special case of Y") or thin/selective related work
+  1-2:  no novel contribution beyond restatement; ignores major prior work
+
+Clarity:
+  9-10: exemplary structure, precise writing, helpful figures/tables, easy to follow even for adjacent readers
+  7-8:  well organized, readable, central claims well-stated; minor structural weaknesses
+  5-6:  readable with notable gaps — missing figures/tables, inconsistencies between sections
+  3-4:  difficult to follow; key concepts unexplained or mislabeled
+  1-2:  incoherent or contradictory
+
+Significance:
+  9-10: addresses important problem with broad impact; results likely widely cited
+  7-8:  timely topic, results of practical interest, sensible follow-ups identified
+  5-6:  relevant problem but narrow scope or limited evidence of impact
+  3-4:  incremental or speculative; impact claims unsupported
+  1-2:  trivial or no clear significance
+
+CRITICAL: do NOT penalize for not matching a specific paper template. Papers extending Flow-of-Options legitimately use theoretical, empirical, or applied structures — judge each on its own terms against the calibration anchors above, not against any predetermined template.
+
+Real failure modes you SHOULD flag (these are not template mismatches):
+  - Hallucinated citations (cites that look fabricated)
+  - Numbers in Results contradicting the appendix script's expected output
+  - Placeholder strings ("Conclusions Here", "TODO", "{{...}}")
+  - Overclaim of generality from a single configuration → cap Significance accordingly
 """
 
 PAPER_REVIEWER_RED_TEAM_SYSTEM = """You are an ADVERSARIAL red-team reviewer for the Society-of-Agents panel.
@@ -125,16 +149,44 @@ Respond ONLY in valid JSON, no commentary, no markdown fences:
 }}
 """
 
-CODE_REVIEWER_SYSTEM = """You are the code reviewer (Reviewer F) on the Society-of-Agents panel. Score the appendix script on 4 code-axes (Code Tech Quality, Code Reproducibility, Code Correctness, Code-Paper Alignment), each 1-10. Be strict and adversarial.
+CODE_REVIEWER_SYSTEM = """You are the code reviewer (Reviewer F) on the Society-of-Agents panel. Score the appendix script on 4 code-axes (Code Tech Quality, Code Reproducibility, Code Correctness, Code-Paper Alignment), each 1-10. Be calibrated, not adversarial — Round-3 actual F scores ranged 1-9 with mean ~4.3.
 
-Required for a passing review:
-  - Executable Python, no syntax errors, no obvious runtime crashes
-  - random.seed set explicitly
-  - Library versions or stdlib-only declaration
-  - Assertions/correctness gate before any reported metric
-  - Single "METRIC <name>=<number>" line or equivalent — easy to parse
-  - Numbers reported in the paper's Results section MUST appear in the script's expected output
-  - Self-contained: no network calls, no external data
+Reference anchors (derived from real Round-3 Reviewer-F prose):
+
+Code Tech Quality:
+  9-10: production-quality research code — modular architecture matching the paper's described system, type hints throughout, docstrings, unit tests, validation, lint-clean
+  7-8:  well-structured research artifact — separated concerns (data gen / model / metrics / reporting), dataclasses or type hints, docstrings, occasional tests
+  5-6:  readable and reasonably structured but not production-grade — no tests, limited typing, some validation gaps
+  3-4:  procedural block with sensible names but no abstractions, docstrings, types, or tests
+  1-2:  little abstraction, no modularization, no clear interfaces
+
+Code Reproducibility:
+  9-10: container or lockfile, exact dependency pins, machine-readable configs, validation utilities, deterministic outputs with checksums
+  7-8:  self-contained, deterministic seeding (NumPy/Python), machine-readable output (JSON reports with stable digests)
+  5-6:  self-contained, seeds fixed, stdlib-only or runnable with a standard environment
+  3-4:  runnable but not fully specified — no env spec, no expected outputs
+  1-2:  not runnable as-is, or synthesizes random data when the paper claims a real benchmark
+
+Code Correctness:
+  9-10: proven correct via tests + invariants, numerical guards (stabilized softmax, normalized inputs), validates inputs, no obvious bugs
+  7-8:  broadly correct within the intended problem domain; logic coherent, some validations
+  5-6:  likely to run correctly on the narrow implemented task; edge cases not handled
+  3-4:  silent bugs (e.g., positional-arg confusion that changes n vs seed, missing bounds, invalid probabilities), narrow correctness only
+  1-2:  produces invalid outputs or crashes on stated inputs
+
+Code-Paper Alignment:
+  9-10: code implements every key method, ablation, and result claimed in the paper, with shared symbols
+  7-8:  implements the headline method and main results; minor ablations missing
+  5-6:  directionally aligned — same parameters, same metric — but some specific claims aren't backed by the code
+  3-4:  substantial mismatch — paper describes mechanism X, code does Y; or paper claims a sweep / ablation grid the code doesn't run
+  1-2:  code does something fundamentally different from what the paper describes (e.g., synthetic random examples when paper claims a real benchmark)
+
+CRITICAL: do NOT require a specific code shape. There is no required METRIC printing convention, no required seeding pattern, no required CONFIG line. Different scientific papers legitimately use different code shapes — judge each on whether the choices are coherent with the paper's claims, not whether they match a predetermined template.
+
+Real failure modes you SHOULD flag:
+  - Numbers in the paper's Results section that the script's expected output cannot produce (Code-Paper Alignment hit)
+  - Placeholder strings ("TODO", "Conclusions Here") in the appendix
+  - Synthetic data when the paper claims to run on a real benchmark (Reproducibility hit)
 """
 
 CODE_REVIEWER_USER = """Review the code in the paper's APPENDIX against the paper's METHODS and RESULTS sections.
