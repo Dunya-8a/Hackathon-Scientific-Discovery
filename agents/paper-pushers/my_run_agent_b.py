@@ -465,12 +465,15 @@ The introduction MUST use this framing decision (do not deviate):
 And signal the methods structure:
 {methods_structure_text}
 
+External literature available for citation (cite as [L1], [L2], ...; only use what's actually relevant — do not pad):
+{lit_text}
+
 Required content (cover ALL of these — be substantive on each):
 1. State the anchor explicitly with arxiv ID and authors.
 2. Summarize FoO's central mechanism in 2-3 sentences: the option DAG, walk sampling, max-update edge rewards, consistency-checker, case-based reasoning.
 3. Identify the walk-sampling-inefficiency limitation. Quote the limitation language. Explain WHY it matters (compute waste, depressed diversity, biased edge updates).
-4. Position against related work on sampling-without-replacement and quasi-Monte Carlo (cite at least 2 of: Niederreiter 1992 on low-discrepancy sequences; Owen 1995/2003 on randomized QMC; Glasserman 2004 on Monte Carlo methods; Settles 2009 on active learning; Sakana AI Scientist v1/v2 on autoresearch protocol).
-5. State the contribution precisely: an autoresearch-driven empirical study of collision_rate across a parameter sweep (multiple K, D, N), with multiple seeds, bootstrap 95% CIs, and a permutation-based statistical test. We do not claim a general improvement to FoO.
+4. Position against related work on sampling-without-replacement and quasi-Monte Carlo. Use [L#] citations from the External Literature block above where they fit, and supplement with: Niederreiter 1992 (low-discrepancy sequences), Owen 1995/2003 (randomized QMC), Glasserman 2004 (Monte Carlo methods), Settles 2009 (active learning), Sakana AI Scientist v1/v2 (autoresearch protocol). Aim for 4-6 references in this section overall.
+5. State the contribution precisely. Match the framing to what the experiment actually demonstrates — do not promise a sweep or statistical test the script did not run.
 6. Outline the remaining sections (1 sentence per section, 4 sections).
 
 Do NOT start with a header. **Target length: 500-650 words.** Markdown. Precise, technical, restrained.
@@ -488,18 +491,28 @@ The EXACT script that ran for the reported results (any constants — K, D, N, s
 {best_script}
 ```
 
+SCRIPT STDOUT (the actual numbers and structure the script produced — describe ONLY what is here; do not invent additional samplers, configurations, or analyses the script did not run):
+```
+{script_stdout}
+```
+
+External literature retrieved for grounding (use to position the related-work and to name comparable methods; cite as [L1], [L2], ... in prose):
+{lit_text}
+
 Required content (cover ALL of these — be substantive and precise):
-1. **Simulated FoO walk-sampling setup.** Describe the synthetic option DAG and the parameter sweep (each (K, D, N) cell), citing the exact constants from the script. Explain why these specific cells were chosen (cover small/medium/large index spaces).
+1. **Simulated FoO walk-sampling setup.** Describe the synthetic option DAG and the parameter sweep ACTUALLY RUN by the script above, citing the exact constants from the script. If the script ran only one configuration, say so; do not pretend it ran a sweep it did not.
 2. **Metric.** Define collision_rate = 1 - (unique_walks / total_walks). Explain its interpretation as fraction of wasted samples.
-3. **Sampler variants.** Describe each named sampler implemented in the script (naive_iid, rejection_memo, stratified_index, and any others), with a 1-2 sentence specification each.
-4. **Multi-seed evaluation.** State the number of seeds per (sampler, config) cell and the seed scheme.
-5. **Bootstrap confidence intervals.** Describe the bootstrap procedure (number of resamples B, percentile method for CI, the per-config mean as the statistic).
-6. **Permutation test.** Describe the two-sample permutation test comparing naive_iid against rejection_memo on the headline cell. Number of permutations, test statistic (mean difference), and that the p-value is two-sided.
+3. **Sampler variants.** Describe each named sampler ACTUALLY IMPLEMENTED in the script above (look at the function definitions). If only one sampler is implemented, say so; do not list samplers that are not in the code.
+4. **Multi-seed evaluation.** Report the number of seeds per (sampler, config) cell as actually used in the script. If the script used a single seed, say so.
+5. **Bootstrap confidence intervals.** If the script computed bootstrap CIs, describe the procedure (B, percentile method) and reproduce one example interval from stdout. If the script did NOT compute CIs, write "no bootstrap CI was computed for this run".
+6. **Permutation test.** If the script ran a permutation test, describe it and quote the p-value from stdout. If not, write "no permutation test was run".
 7. **Autoresearch loop.** Describe the iterative procedure: baseline + K=3 LLM-proposed mutations to the script, correctness gate (assertion suite), revert-writes-best policy, headline metric optimization.
 8. **Reproducibility.** Explicit seeds, stdlib only, deterministic data generation, no network, no file I/O outside stdout.
 9. **Honest scope.** We study walk sampling in a simulated DAG; we do not run LLM-driven FoO. We do not claim a general improvement to FoO; the contribution is mechanistic attribution and statistical characterization within one sampler family.
 
-Reference at least 2 of: Efron & Tibshirani 1993 (bootstrap), Good 2005 (permutation tests), Niederreiter 1992 (low-discrepancy), Mannila/Toivonen/Verkamo 1994 (frequent patterns) where they apply.
+Cite from the External Literature block above where it positions the work. Also reference where appropriate: Efron & Tibshirani 1993 (bootstrap), Good 2005 (permutation tests), Niederreiter 1992 (low-discrepancy), Glasserman 2004 (Monte Carlo).
+
+**HARD CONSTRAINT** (this is what Reviewer F docks for): every claim in this Methods section must be backed by either the script code OR the script stdout shown above. Do not describe an ablation the script did not run; do not name a sampler that is not implemented; do not invent statistical analyses.
 
 Do NOT start with a header. **Target length: 550-700 words.** Markdown.
 """
@@ -549,7 +562,10 @@ SCRIPT STDOUT (truncated):
 Required content (cover ALL of these):
 1. **Restate the kept finding** in one precise sentence. Use the headline number ({best_metric_str}) verbatim. Cite a CI only if one appears in the stdout above; otherwise write "no bootstrap CI was emitted for this run".
 2. **Defend the stance above** with a substantive argument from the empirical results — what specifically about the data supports this position?
-3. **Position against related work.** Compare the contribution to (a) sampling-without-replacement / Fisher-Yates / reservoir sampling, (b) low-discrepancy sequences (Halton, Sobol), (c) active-learning-style diversity-forcing (cite Settles 2009 if relevant), (d) Sakana's AI Scientist autoresearch (Lu et al. 2024). Be honest about overlap.
+3. **Position against related work.** Compare the contribution to (a) sampling-without-replacement / Fisher-Yates / reservoir sampling, (b) low-discrepancy sequences (Halton, Sobol), (c) active-learning-style diversity-forcing (cite Settles 2009 if relevant), (d) Sakana's AI Scientist autoresearch (Lu et al. 2024). Also pull from the External Literature block below where any [L#] entry is actually relevant — do not pad. Be honest about overlap.
+
+External literature available for citation (cite as [L#]; use only what's actually relevant):
+{lit_text}
 4. **Three specific limitations** (numbered, each 2-3 sentences):
    - Simulation-vs-real LLM-driven FoO gap
    - Single-domain coverage / external validity
@@ -581,15 +597,20 @@ def render_final_paper(best_walk: tuple[int, ...], dag: dict, exp_result: dict) 
         for e in exp_result["log"]
     )
 
-    print("[render] writing intro...")
-    intro = _strip_leading_header(_llm(INTRO_PROMPT_B.format(
-        anchor=FOO_ANCHOR, framing_text=f, methods_structure_text=ms,
-    ), max_tokens=6000))
-    print("[render] writing methods...")
-    methods = _strip_leading_header(_llm(METHODS_PROMPT_B.format(
-        methods_structure_text=ms, ablation_text=ab, best_script=best_script,
-    ), max_tokens=6000))
-    # Capture the latest stdout from running the best script so Results can quote sweep numbers verbatim.
+    # Pull external literature once; thread it into intro/methods/discussion so the agent
+    # has named comparable methods to cite (addresses Reviewer A-E's "thin related work" hit).
+    try:
+        from my_run_agent import gather_literature, _lit_block, _augment_references  # noqa: E402
+        print("[render] gathering external literature (arXiv + OpenAlex)...")
+        literature = gather_literature(max_total=8)
+        lit_text = _lit_block(literature)
+        print(f"[render]   pulled {len(literature)} sources")
+    except Exception as e:
+        print(f"[render] literature mining unavailable: {e}", file=sys.stderr)
+        literature, lit_text = [], "(no external literature available)"
+
+    # Re-run the best script ONCE here so Methods/Results can describe what actually ran
+    # (Reviewer F docks Code-Paper Alignment when Methods describes things the code does not do).
     script_stdout = ""
     if exp_result["best"]:
         try:
@@ -597,6 +618,17 @@ def render_final_paper(best_walk: tuple[int, ...], dag: dict, exp_result: dict) 
                                      working_dir=str(WORKING_DIR))
         except Exception as e:
             script_stdout = f"(failed to re-run for stdout capture: {e})"
+
+    print("[render] writing intro...")
+    intro = _strip_leading_header(_llm(INTRO_PROMPT_B.format(
+        anchor=FOO_ANCHOR, framing_text=f, methods_structure_text=ms,
+        lit_text=lit_text,
+    ), max_tokens=6000))
+    print("[render] writing methods...")
+    methods = _strip_leading_header(_llm(METHODS_PROMPT_B.format(
+        methods_structure_text=ms, ablation_text=ab, best_script=best_script,
+        script_stdout=script_stdout[:4000], lit_text=lit_text,
+    ), max_tokens=6000))
     print("[render] writing results...")
     results = _strip_leading_header(_llm(RESULTS_PROMPT_B.format(
         results_narrative_text=rn, log_text=log_text, best_metric=best_metric_str,
@@ -608,6 +640,7 @@ def render_final_paper(best_walk: tuple[int, ...], dag: dict, exp_result: dict) 
         best_metric_str=best_metric_str,
         log_text=log_text,
         script_stdout=script_stdout[:4000],
+        lit_text=lit_text,
     ), max_tokens=6000))
     # Append discussion as a final subsection of results (Paper schema has no `discussion` field)
     if discussion:
@@ -643,6 +676,14 @@ def render_final_paper(best_walk: tuple[int, ...], dag: dict, exp_result: dict) 
 """
 
     appendix = f"# Code\n\n```python\n{best_script}\n```" if best_script else ""
+
+    # Augment references with the retrieved literature ([L1], [L2], ...) so any in-prose
+    # [L#] citations the section prompts produced have resolvable targets.
+    try:
+        if literature:
+            references = _augment_references(references, literature)
+    except NameError:
+        pass
 
     return Paper(
         title=title,
