@@ -37,8 +37,8 @@ Shared helper: `archive_paper()` lives in `my_run_agent.py`; b/c/fast import it.
 
 | # | Limitation | Status | Agent |
 |---|---|---|---|
-| 0 | Metric dependency | **not addressed** | — |
-| 1 | Data availability | **not addressed** | — |
+| 0 | Metric dependency | done | `agent_metric_dependency.py` |
+| 1 | Data availability | done | `agent_data_availability.py` |
 | 2 | Residual method bias (RF) | done | `agent_method_bias.py` |
 | 3 | Walk-sampling inefficiency | done | `my_run_agent.py` (main) |
 | 4 | Consistency-checker FP | done | `agent_checker_fp.py` |
@@ -65,8 +65,8 @@ All eight paper-pushers agents now go through `llm.chat()` (Anthropic API by def
 Priority is rough — `[P0]` blocking value, `[P1]` clear win, `[P2]` nice-to-have.
 
 ### Sibling agents for untouched FoO limitations
-- [ ] `[P1]` **`agent_metric_dependency.py`** — FoO limitation #0. Study how FoO degrades when the evaluator is *non-quantifiable* or *noisy*. Concrete metric: variance of best-walk choice under N replays of a noisy metric. ~45 min copy-and-modify from `agent_checker_fp.py`.
-- [ ] `[P1]` **`agent_data_availability.py`** — FoO limitation #1. Study how FoO behaves under low-data regimes (e.g., 10, 50, 200 training rows). Metric: walk-selection accuracy vs. an oracle as n_train shrinks. ~45 min, same template.
+- [x] `[P1]` **`agent_metric_dependency.py`** — FoO limitation #0. Metric: `best_walk_variance` (variance of the selected walk's true quality across N seeded replays of a noisy evaluator; minimize). Gate: noise_std>=0, N>=10, plus a load-bearing selection-quality floor (>=0.80) that blocks the constant-walk hack. End-to-end result: baseline 0.001169 → 0.000054 via repeated-measurement denoising (~95% reduction). Imports gather_literature/archive_paper from main; own `files_metric_dep/`. Drafts archived; latest cache `bc88cc3c` (UNPUBLISHED).
+- [x] `[P1]` **`agent_data_availability.py`** — FoO limitation #1. Metric: `low_data_walk_accuracy` (selected-walk-vs-oracle accuracy as n_train shrinks; MAXIMIZE — agent carries a `MINIMIZE=False` direction flag). Sweep n_train ∈ {10,50,200,1000}. Gate: n_train>=5 plus a load-bearing acc@maxdata>=0.90 floor. End-to-end: honest **null result** across 2 seeds — noise-aware selectors (LCB / trimmed-mean / empirical-Bayes shrinkage) do not beat empirical-mean argmax at low n; the dominant lever is n_train itself. Own `files_data_avail/`; latest cache `ce8bbd52` (UNPUBLISHED).
 
 ### Literature retrieval upgrade
 - [x] **OpenAlex swap** — `gather_literature()` left DDG behind. Live-tested.
