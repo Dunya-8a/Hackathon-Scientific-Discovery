@@ -43,6 +43,21 @@ Shared helper: `archive_paper()` lives in `my_run_agent.py`; b/c/fast import it.
 | 3 | Walk-sampling inefficiency | done | `my_run_agent.py` (main) |
 | 4 | Consistency-checker FP | done | `agent_checker_fp.py` |
 
+## Key finding (limitations #0 + #1, synthesized)
+
+The metric_dependency and data_availability agents reduce to one claim: **FoO's
+selection quality is bounded by evaluation-signal quantity, not selection-rule
+cleverness.** When signal is re-queryable (noisy evaluator), averaging repeated
+reads cut `best_walk_variance` ~95%. When signal is fixed (low data), no
+noise-aware selector (LCB / trimmed-mean / EB-shrinkage) beat empirical-mean
+argmax — a **null result reproduced across 3 seeds**, and one that matches theory
+(the sample mean is already efficient under Gaussian noise). Lever in both cases:
+more signal, not smarter post-processing. Full write-up:
+`docs/research/foo-evaluation-signal-bound.md`.
+
+Note: these are *research findings about FoO*, not reviewer-panel scores —
+neither paper was submitted (hackathon is over).
+
 ## Outputs so far
 
 - **27 preprints** across this session (per `hackathon my-papers`), 6 submitted across review rounds.
@@ -83,7 +98,7 @@ Priority is rough — `[P0]` blocking value, `[P1]` clear win, `[P2]` nice-to-ha
 - [ ] `[P2]` Make Phase B option generation depth-conditional (each depth's options condition on earlier choices).
 
 ### Documentation
-- [ ] `[P2]` After a few more runs, distil "lessons learned" into `docs/research/` (e.g., empirical wall-budget findings, OpenAlex vs DDG quality, what reviewer panels actually punish).
+- [x] `[P2]` Distil "lessons learned" into `docs/research/` — first one landed: `docs/research/foo-evaluation-signal-bound.md` (the #0+#1 evaluation-signal-bound synthesis). Still open: empirical wall-budget findings, OpenAlex vs DDG quality, what reviewer panels actually punish.
 
 ### Defense pass (architecture.md Phase 5, never implemented)
 - [ ] `[P2]` Build `defense.py`: assert no placeholder strings, every number in Results traceable to the autoresearch log, FoO anchor present, at least one table/figure, every citation resolves. Run as the final step of every `run()` before returning. Currently we trust the prompts; this would enforce the floor.
