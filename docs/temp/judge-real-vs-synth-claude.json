@@ -1,0 +1,32 @@
+[
+  {
+    "label": "synthetic: choosing-a-diversity-metric",
+    "bt_strength": 8.2479,
+    "bt_unc": 2.3573,
+    "stage1": 1.6667
+  },
+  {
+    "label": "REAL-FoO (vs self-consistency, hard MATH)",
+    "bt_strength": 2.687,
+    "bt_unc": 3.1061,
+    "stage1": 2.0
+  },
+  {
+    "label": "synthetic: metric_dependency",
+    "bt_strength": -0.4821,
+    "bt_unc": 1.3373,
+    "stage1": 1.0
+  },
+  {
+    "label": "synthetic: data_availability",
+    "bt_strength": -2.4665,
+    "bt_unc": 3.1644,
+    "stage1": 1.0
+  },
+  {
+    "label": "synthetic: birthday-floor walk sampling",
+    "bt_strength": -7.9863,
+    "bt_unc": 2.9305,
+    "stage1": 1.0
+  }
+]

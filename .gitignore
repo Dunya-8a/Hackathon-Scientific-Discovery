@@ -5,6 +5,7 @@ __pycache__/
 # Agent runtime artifacts (regenerated each run)
 agents/*/.cache/
 agents/*/.judge_cache/
+agents/*/.real_foo_cache.json
 agents/*/files/
 agents/*/files_*/
 
