@@ -17,6 +17,7 @@ Contract: run(problem_domain, papers_dir=None) -> Paper.
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -55,6 +56,13 @@ FOO_LIMITATIONS = [
 LIMITATION = FOO_LIMITATIONS[1]
 METRIC_NAME = "low_data_walk_accuracy"
 MINIMIZE = False   # accuracy of the chosen walk vs oracle — higher is better
+
+# Seed for the synthetic ground-truth world (true means + per-walk noise scales).
+# Override via DATA_SEED to test whether the null result is seed-robust. Note:
+# this hard-pins the fallback baseline; the LLM-designed baseline receives the
+# seed via the prompt and usually honors it, but is only soft-pinned (it may
+# still vary other free choices).
+DATA_SEED = int(os.environ.get("DATA_SEED", "7"))
 
 
 # --- LLM helper ---------------------------------------------------------
@@ -210,8 +218,10 @@ HARD CONSTRAINTS on the script (write clean, reviewable code — a reviewer will
 1. Only stdlib (random) — do NOT import numpy or any third-party library.
 2. Module docstring at the top, then random.seed(0). Use typed helper functions (world, samples, select,
    accuracy) and a `def main()` style flow; no top-level spaghetti.
-3. Use an INDEPENDENT, deterministic RNG per n_train (e.g. random.Random(3000+n_train)) so a given
-   n_train yields identical numbers as the primary metric and in the sweep.
+3. Seed the ground-truth world (true means + per-walk noise scales) with random.Random({data_seed}) so
+   the underlying problem is reproducible. Use a SEPARATE, INDEPENDENT, deterministic RNG per n_train
+   (e.g. random.Random(3000+n_train)) so a given n_train yields identical numbers as the primary metric
+   and in the sweep.
 4. Print, in order: "CONFIG: ...", "INPUT: ...", then per-n_train "SWEEP: n_train=<d> {metric_name}=<f>" lines.
 5. Correctness gate BEFORE the metric: assert PRIMARY_NTRAIN >= 5; assert accuracy at the LARGEST n_train
    >= 0.90 (a degenerate / data-ignoring selector scores ~1/W and fails this — that is the point).
@@ -270,12 +280,14 @@ PLAN: <one sentence: the change AND why it is mechanistically distinct from prio
 def autoresearch_loop(k_attempts: int = 3) -> dict:
     WORKING_DIR.mkdir(parents=True, exist_ok=True)
     log: list[dict] = []
+    # Honor DATA_SEED in the fallback too (the LLM baseline gets it via the prompt).
+    fallback_code = FALLBACK_BASELINE.replace("random.Random(7)", f"random.Random({DATA_SEED})")
 
-    print("[autoresearch] designing baseline...")
+    print(f"[autoresearch] designing baseline... (world seed={DATA_SEED})")
     llm_baseline = _extract_code(_llm(BASELINE_PROMPT.format(
-        anchor=FOO_ANCHOR, limitation=LIMITATION, metric_name=METRIC_NAME,
+        anchor=FOO_ANCHOR, limitation=LIMITATION, metric_name=METRIC_NAME, data_seed=DATA_SEED,
     )))
-    baseline_code = llm_baseline if llm_baseline.strip() else FALLBACK_BASELINE
+    baseline_code = llm_baseline if llm_baseline.strip() else fallback_code
 
     out = run_code(baseline_code, filename="script.py", working_dir=str(WORKING_DIR))
     m = _parse_metric(out, METRIC_NAME)
@@ -287,10 +299,10 @@ def autoresearch_loop(k_attempts: int = 3) -> dict:
 
     if not ok:
         print("[autoresearch] baseline failed, using fallback")
-        out = run_code(FALLBACK_BASELINE, filename="script.py", working_dir=str(WORKING_DIR))
+        out = run_code(fallback_code, filename="script.py", working_dir=str(WORKING_DIR))
         m = _parse_metric(out, METRIC_NAME)
         ok = _gate_ok(out) and m is not None
-        baseline_code = FALLBACK_BASELINE
+        baseline_code = fallback_code
         log.append({"id": 0, "kind": "baseline-fallback", "plan": "fallback baseline",
                     "metric": m, "ok": ok, "kept": ok, "stdout_tail": out[-500:]})
 
