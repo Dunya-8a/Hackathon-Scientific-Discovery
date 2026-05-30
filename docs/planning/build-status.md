@@ -45,14 +45,20 @@ Shared helper: `archive_paper()` lives in `my_run_agent.py`; b/c/fast import it.
 
 ## Key finding (limitations #0 + #1, synthesized)
 
-The metric_dependency and data_availability agents reduce to one claim: **FoO's
-selection quality is bounded by evaluation-signal quantity, not selection-rule
-cleverness.** When signal is re-queryable (noisy evaluator), averaging repeated
-reads cut `best_walk_variance` ~95%. When signal is fixed (low data), no
-noise-aware selector (LCB / trimmed-mean / EB-shrinkage) beat empirical-mean
-argmax — a **null result reproduced across 3 seeds**, and one that matches theory
-(the sample mean is already efficient under Gaussian noise). Lever in both cases:
-more signal, not smarter post-processing. Full write-up:
+**FoO's selection quality is bounded by evaluation-signal quantity/reliability,
+and you can buy accuracy back two ways.** (1) metric_dependency: when the noisy
+evaluator is re-queryable, averaging repeated reads cut `best_walk_variance`
+~95%. (2) data_availability: when data is fixed but *noisy*, a noise-aware
+selector (LCB) beats empirical-mean argmax — but only conditionally. Across 5
+LLM-designed worlds, LCB helped (+8% to +36%) in the two noisy/low-baseline
+worlds and was null in the three cleaner ones; the gain tracks how badly naive
+argmax is suffering.
+
+CORRECTION: an earlier version of this section (and the research note) claimed a
+"robust null result across 3 seeds" for data_availability. That was an overclaim
+— those 3 worlds were low-noise; seeds 555 and 13 (noisier) refute it. Caveat:
+the cross-seed comparison is confounded (the LLM picks the world's noise
+magnitude each run); a clean test pins the world and sweeps σ. Full write-up:
 `docs/research/foo-evaluation-signal-bound.md`.
 
 Note: these are *research findings about FoO*, not reviewer-panel scores —
@@ -81,7 +87,7 @@ Priority is rough — `[P0]` blocking value, `[P1]` clear win, `[P2]` nice-to-ha
 
 ### Sibling agents for untouched FoO limitations
 - [x] `[P1]` **`agent_metric_dependency.py`** — FoO limitation #0. Metric: `best_walk_variance` (variance of the selected walk's true quality across N seeded replays of a noisy evaluator; minimize). Gate: noise_std>=0, N>=10, plus a load-bearing selection-quality floor (>=0.80) that blocks the constant-walk hack. End-to-end result: baseline 0.001169 → 0.000054 via repeated-measurement denoising (~95% reduction). Imports gather_literature/archive_paper from main; own `files_metric_dep/`. Drafts archived; latest cache `bc88cc3c` (UNPUBLISHED).
-- [x] `[P1]` **`agent_data_availability.py`** — FoO limitation #1. Metric: `low_data_walk_accuracy` (selected-walk-vs-oracle accuracy as n_train shrinks; MAXIMIZE — agent carries a `MINIMIZE=False` direction flag). Sweep n_train ∈ {10,50,200,1000}. Gate: n_train>=5 plus a load-bearing acc@maxdata>=0.90 floor. End-to-end: honest **null result** across 2 seeds — noise-aware selectors (LCB / trimmed-mean / empirical-Bayes shrinkage) do not beat empirical-mean argmax at low n; the dominant lever is n_train itself. Own `files_data_avail/`; latest cache `ce8bbd52` (UNPUBLISHED).
+- [x] `[P1]` **`agent_data_availability.py`** — FoO limitation #1. Metric: `low_data_walk_accuracy` (selected-walk-vs-oracle accuracy as n_train shrinks; MAXIMIZE — agent carries a `MINIMIZE=False` direction flag). Sweep n_train ∈ {10,50,200,1000}. Gate: n_train>=5 plus a load-bearing acc@maxdata>=0.90 floor. End-to-end (5 LLM-designed worlds via DATA_SEED): **conditional** result — noise-aware LCB beats empirical-mean argmax (+8% to +36%) in the two noisy/low-baseline worlds (seeds 555, 13) and is null in the three cleaner ones. Gain tracks how badly naive argmax suffers. (Cross-seed comparison is confounded — LLM picks noise magnitude per run; see `docs/research/foo-evaluation-signal-bound.md`.) Own `files_data_avail/`; latest cache `ce8bbd52` (UNPUBLISHED).
 
 ### Literature retrieval upgrade
 - [x] **OpenAlex swap** — `gather_literature()` left DDG behind. Live-tested.
